@@ -39,6 +39,8 @@ ekg-preprocess = "ekg.preprocessing:main"
 ekg-check-data = "ekg.data.check_pipeline:main"
 ekg-ae-info = "ekg.models.autoencoder:main"
 ekg-clf-info = "ekg.models.classifier:main"
+ekg-train-ae = "ekg.training.train_autoencoder:main"
+ekg-ae-report = "ekg.training.report_autoencoder:main"
 
 [build-system]
 requires = ["hatchling"]

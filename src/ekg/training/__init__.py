@@ -1,0 +1,1 @@
+"""Tréning modelov."""

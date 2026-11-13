@@ -1,0 +1,30 @@
+# Tréning Modelu A – autoencoder na prísnom NORM (issue #11)
+# Spustenie:  uv run ekg-train-ae                      (nový beh)
+#             uv run ekg-train-ae --resume             (pokračovať po prerušení)
+
+run_name: ae_v1
+seed: 42
+
+model:                 # AutoencoderConfig (#10)
+  channels: [32, 64, 128]
+  latent_channels: 16
+  kernel_size: 7
+  dropout: 0.0
+
+data:
+  train: train/strict_norm   # iba prísny NORM z train
+  val: val/strict_norm       # early stopping podľa NORM z validation
+  batch_size: 64
+
+optimizer:
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:             # ReduceLROnPlateau na val loss
+  factor: 0.5
+  patience: 4
+
+training:
+  max_epochs: 100
+  early_stopping_patience: 12   # koľko epoch bez zlepšenia val loss, kým sa tréning zastaví
+  min_delta: 0.0001             # menšie zlepšenie sa nepočíta

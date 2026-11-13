@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "run": "ae_v1",
+  "checkpoint_sha256": "b9214cde491f8e79ac6d61d49ebc84cf6400422dda69f76ea8ebab3c7b2cb87c",
+  "checkpoint_epoch": 95,
+  "aggregation": "mean",
+  "rule": "youden",
+  "rule_description": "maximum Youdenovho J = senzitivita + špecificita − 1",
+  "threshold": 0.038366515189409256,
+  "calibrated_on": {
+    "split": "val",
+    "n_strict_norm": 454,
+    "n_abnormal": 1240,
+    "n_excluded": 489
+  },
+  "validation_metrics": {
+    "TP": 759,
+    "FP": 41,
+    "TN": 413,
+    "FN": 481,
+    "senzitivita": 0.6120967741935484,
+    "špecificita": 0.9096916299559471,
+    "precision": 0.94875,
+    "F1": 0.7441176470588234,
+    "falošné poplachy NORM": 0.0903083700440529
+  },
+  "auroc": 0.8321337217564304,
+  "created_at": "2026-11-13T10:50:58+00:00"
+}

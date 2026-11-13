@@ -90,3 +90,22 @@ pravdepodobnosti mimo [0, 1], príklad JSON z dokumentácie sa načíta a ulož�
 **Overenie:** 21 testov – modelové príklady (čistý NORM, NORM s patológiou, AFIB s likelihood 0,
 viac labelov, iba flutter, NORM so šumom/PVC) aj presné počty na skutočnom PTB-XL;
 CSV mapovacia tabuľka je testom zviazaná s kódom.
+
+---
+
+## 2026-11-13 – Rozdelenie na train / validation / test (issue #6)
+
+**Rozhodnutie:** oficiálne `strat_fold` PTB-XL – foldy 1–8 train, 9 validation, 10 test.
+Vlastné náhodné rozdelenie som zamietol: foldy sú už rozdelené podľa pacientov, stratifikované
+a foldy 9–10 sú overené človekom; navyše sú výsledky porovnateľné s benchmarkom.
+
+**Opatrenia proti úniku informácií:**
+- `check_no_leak()` pri každom vytvorení aj načítaní manifestu overí, že žiadny pacient ani záznam
+  nie je vo viacerých množinách.
+- Manifest `manifests/splits_v1.0.csv` je v gite → všetky experimenty používajú tie isté záznamy.
+- Test množina je zamknutá (`TestSetLockedError`); odomyká sa iba explicitne v záverečnom
+  vyhodnotení (#22).
+
+**Výsledok:** 17 418 / 2 183 / 2 198 záznamov (15 023 / 1 942 / 1 904 pacientov), prekrývanie
+pacientov 0. Podiely labelov sa medzi množinami líšia najviac o 0,5 p. b. (napr. AFIB 7,1 / 7,0 / 7,0 %).
+Prísny NORM: 3 905 / 454 / 464.

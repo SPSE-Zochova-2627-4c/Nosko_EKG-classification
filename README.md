@@ -66,6 +66,7 @@ Kód sa preto píše tak, aby fungoval s PyTorch 2.2 aj novším.
 ├── configs/        # konfigurácie experimentov
 ├── notebooks/      # Jupyter notebooky na prieskum dát
 ├── docs/           # dokumentácia a denník rozhodnutí
+├── manifests/      # rozdelenie train/val/test (v gite)
 ├── data/           # dataset – mimo gitu, pozri data/README.md
 ├── checkpoints/    # natrénované modely – mimo gitu
 └── outputs/        # reporty, grafy, predikcie – mimo gitu
@@ -85,6 +86,13 @@ uv run ekg-verify-data    # načíta všetky záznamy a overí tvar (12, 1000)
 ```
 
 Dáta skončia v `data/raw/ptb-xl/`. Podrobnosti sú v [data/README.md](data/README.md).
+
+Mapovanie labelov a rozdelenie dát:
+
+```bash
+uv run ekg-labels         # počty labelov a prísneho NORM (docs/mapovanie_labelov.md)
+uv run ekg-splits --check # overí manifest manifests/splits_v1.0.csv (docs/rozdelenie_dat.md)
+```
 
 V kóde:
 

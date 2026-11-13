@@ -30,7 +30,9 @@ data/
 │   ├── SHA256SUMS.txt
 │   ├── LICENSE.txt
 │   └── DOWNLOAD_INFO.json
-└── processed/                 # manifesty splitov, normalizačné parametre (issues #6, #8)
+└── processed/
+    ├── signals_100hz.npy      # cache surových signálov (N, 12, 1000), ~1 GB – uv run ekg-preprocess
+    └── signals_100hz_ids.npy  # ecg_id v poradí cache
 ```
 
 Prerušené sťahovanie stačí spustiť znova, pokračuje od miesta, kde skončilo. Ak sú dáta inde

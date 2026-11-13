@@ -35,6 +35,7 @@ ekg-download = "ekg.data.download:main"
 ekg-verify-data = "ekg.data.ptbxl:main"
 ekg-labels = "ekg.data.labels:main"
 ekg-splits = "ekg.data.splits:main"
+ekg-preprocess = "ekg.preprocessing:main"
 
 [build-system]
 requires = ["hatchling"]

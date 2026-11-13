@@ -1,0 +1,6 @@
+,záznamy,označené ako anomália,medián chyby
+nie je NORM s likelihood 100,253,0.35968379446640314,0.02901751
+šum alebo problém s elektródami,106,0.1792452830188679,0.024867889
+"baseline drift, extra beats alebo kardiostimulátor",53,0.22641509433962265,0.023454934
+form kód,47,0.1702127659574468,0.020067839
+rytmus iný ako SR,30,0.26666666666666666,0.025358513

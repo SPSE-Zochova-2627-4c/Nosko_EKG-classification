@@ -99,6 +99,7 @@ uv run ekg-clf-info       # architektúra klasifikátora (docs/model_b_klasifika
 uv run ekg-train-ae       # tréning autoencodera, --resume po prerušení (docs/trening_autoencodera.md)
 uv run ekg-ae-report      # chyba autoencodera na validation, AUROC NORM vs. patológia
 uv run ekg-calibrate-ae   # prah anomálie na validation (docs/prah_anomalie.md)
+uv run ekg-ae-analysis    # analýza chýb autoencodera (docs/analyza_autoencodera.md)
 ```
 
 V kóde:

@@ -245,3 +245,22 @@ Alternatíva p95 (55 % / 95 %) bola bližšie k princípu „učím sa iba z NOR
 patológie; Youden dáva lepšie vyváženie oboch chýb. Toto obmedzenie treba uviesť v práci.
 
 Prah je uložený spolu so SHA256 checkpointu (test kontroluje, že patrí k `best.pt`).
+
+---
+
+## 2026-11-13 – Analýza chýb autoencodera (issue #14)
+
+**Metriky (validation, prah Youden 0,03837):** TP 759, FP 41, TN 413, FN 481 → senzitivita 0,61,
+špecificita 0,91, precision 0,95, F1 0,74, AUROC 0,83, AUPRC 0,93.
+
+**Zistenia:**
+- Zachytené podľa labelu: AFIB 80 %, HYP 77 %, CD 74 %, MI 66 %, STTC 60 %; pri jedinom labeli STTC
+  len 37 % a MI 49 % → autoencoder dobre vidí zmeny tvaru QRS a rytmu, zle ST/T zmeny a starý infarkt.
+- HYP má najväčšiu chybu vo V4–V6 (napäťové kritériá LVH) – autoencoder „oreže“ vysoké amplitúdy.
+- Lokalizácia MI podľa chyby po zvodoch súhlasí s anatómiou iba čiastočne → na lokalizáciu bude Grad-CAM (#27).
+- Najväčší „falošný poplach“ (ecg_id 10535) je prísny NORM s **nezaznamenaným artefaktom elektród** vo V5/V6 →
+  časť FP sú chyby anotácií, nie modelu (limitácia PTB-XL, podnet pre #7).
+- FP majú častejšie najhorší hrudný zvod (V1, V4, V3) a sú častejšie u mužov (68 % vs. 53 %).
+- Najhorší FN (MI, chyba 6× pod prahom) vyzerá úplne normálne – principiálny limit autoencodera.
+
+**Zachytená chyba:** test odhalil pád pri zázname bez SCP kódov (NaN po reindexe) – ošetrené.

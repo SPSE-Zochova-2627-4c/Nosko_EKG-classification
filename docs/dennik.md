@@ -149,3 +149,21 @@ je v epoche práve raz, prísny NORM má ciele 0, prekrývanie pacientov 0, seed
 **Zachytená chyba:** pandas 3 vracia z `to_numpy()` pole iba na čítanie a PyTorch na to upozorňuje
 (zápis do takého tenzora má nedefinované správanie) – opravené kópiou; testy teraz bežia aj s
 `-W error::UserWarning`.
+
+---
+
+## 2026-11-13 – Model A: 1D konvolučný autoencoder (issue #10)
+
+**Architektúra:** encoder 3 bloky (Conv1d stride 2 + BN + ReLU + Conv1d), hrdlo Conv1d 1×1 na
+16 kanálov × 125 bodov (kompresia 6×), decoder zrkadlovo s ConvTranspose1d, lineárny výstup.
+321 436 parametrov. Šírka hrdla a ďalšie parametre sú v `AutoencoderConfig` a budú sa ladiť v #11.
+
+**Checkpoint:** váhy + konfigurácia + kontrakt + verzie preprocessingu, mapovania a splitov;
+načítanie s `weights_only=True` (bezpečné) a s odmietnutím iného kontraktu.
+
+**Zachytená chyba:** `torch.__version__` je objekt `TorchVersion`, ktorý bezpečné načítanie
+odmietne – ukladá sa ako reťazec.
+
+**Overenie:** 11 testov (tvar, gradienty do všetkých parametrov, bitovo rovnaký výstup po
+načítaní checkpointu, odmietnutie iného typu/kontraktu, schopnosť preučiť malú dávku).
+Na skutočnej dávke prísneho NORM kleslo MSE za 150 krokov z 0,85 na 0,04 – model sa učí.

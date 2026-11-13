@@ -167,3 +167,19 @@ odmietne – ukladá sa ako reťazec.
 **Overenie:** 11 testov (tvar, gradienty do všetkých parametrov, bitovo rovnaký výstup po
 načítaní checkpointu, odmietnutie iného typu/kontraktu, schopnosť preučiť malú dávku).
 Na skutočnej dávke prísneho NORM kleslo MSE za 150 krokov z 0,85 na 0,04 – model sa učí.
+
+---
+
+## 2026-11-13 – Rekonštrukčná chyba (issue #12)
+
+**Rozhodnutie:** skóre anomálie = MSE cez všetkých 12 × 1000 hodnôt (priemer chýb po zvodoch).
+Rovnaká veličina ako tréningová loss; druhá mocnina zvýrazní veľké lokálne odchýlky (QRS, ST).
+Uchováva sa aj chyba po zvodoch (B, 12) a v čase (B, 1000).
+
+**Otvorená otázka do #13:** priemer cez zvody rozriedi anomáliu viditeľnú len v pár zvodoch
+(napr. inferiórny MI) – 1 zvod s chybou 4 dá skóre 0,33. Alternatíva „max zvod“ sa porovná na validation
+bez nového výpočtu, lebo chyby po zvodoch sú uložené.
+
+**Overenie:** 15 testov s analyticky známymi výsledkami (identita = 0, posun c → c², posun v jednom
+zvode → c²/12 resp. c², sínus → 0,5, zhoda s `mse_loss`, nezávislosť od dávky, odmietnutie NaN/zlého tvaru).
+Výpočet na celej validation (2 183 záznamov) trvá 3,4 s na CPU.

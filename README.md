@@ -95,6 +95,7 @@ uv run ekg-splits --check # overí manifest manifests/splits_v1.0.csv (docs/rozd
 uv run ekg-preprocess     # cache signálov + normalizácia z train (docs/preprocessing.md)
 uv run ekg-check-data     # kontrolný priechod celou dátovou pipeline (docs/data_loader.md)
 uv run ekg-ae-info        # architektúra autoencodera (docs/model_a_autoencoder.md)
+uv run ekg-clf-info       # architektúra klasifikátora (docs/model_b_klasifikator.md)
 ```
 
 V kóde:

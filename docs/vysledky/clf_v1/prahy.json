@@ -1,0 +1,180 @@
+{
+  "version": "1.0",
+  "run": "clf_v1",
+  "checkpoint_sha256": "20d915b776a3e4d8ab9d569ccf604db45aa4c2e6125acde2acc49f7456b24304",
+  "checkpoint_epoch": 20,
+  "model_versions": {
+    "preprocessing": "1.0",
+    "label_mapping": "1.0",
+    "splits": "1.0",
+    "torch": "2.14.0+rocm10.1.0"
+  },
+  "label_order": [
+    "MI",
+    "STTC",
+    "CD",
+    "HYP",
+    "AFIB"
+  ],
+  "rule": "p >= prah → label pozitívny",
+  "criterion": "f1",
+  "criterion_description": "maximum F1 na validation, zvlášť pre každý label",
+  "min_pos": 30,
+  "min_neg": 30,
+  "fallback_threshold": 0.5,
+  "calibrated_on": {
+    "split": "val",
+    "subset": "classifier",
+    "n_records": 2150,
+    "precision": "float32",
+    "max_abs_diff_bf16": 0.024141252040863037,
+    "decisions_changed_bf16": 28,
+    "macro_f1_threshold_0_5": 0.7081404062905825,
+    "macro_f1_chosen": 0.7584984059657567,
+    "macro_f1_cv5": 0.748063424395482,
+    "n_patients": 1919
+  },
+  "labels": {
+    "MI": {
+      "threshold": 0.746414065361023,
+      "method": "f1",
+      "n_pos": 540,
+      "n_neg": 1610,
+      "validation_metrics": {
+        "TP": 431,
+        "FP": 199,
+        "TN": 1411,
+        "FN": 109,
+        "senzitivita": 0.7981481481481482,
+        "špecificita": 0.8763975155279503,
+        "precision": 0.6841269841269841,
+        "F1": 0.7367521367521368
+      },
+      "bootstrap": {
+        "n": 1000,
+        "threshold_ci95": [
+          0.6332734823226929,
+          0.8615660667419434
+        ],
+        "f1_ci95": [
+          0.7085136775240963,
+          0.7642690344303248
+        ]
+      },
+      "f1_cv5": 0.7251975417032485
+    },
+    "STTC": {
+      "threshold": 0.723987340927124,
+      "method": "f1",
+      "n_pos": 528,
+      "n_neg": 1622,
+      "validation_metrics": {
+        "TP": 408,
+        "FP": 138,
+        "TN": 1484,
+        "FN": 120,
+        "senzitivita": 0.7727272727272727,
+        "špecificita": 0.9149198520345253,
+        "precision": 0.7472527472527473,
+        "F1": 0.7597765363128491
+      },
+      "bootstrap": {
+        "n": 1000,
+        "threshold_ci95": [
+          0.4934083431959152,
+          0.7560006141662597
+        ],
+        "f1_ci95": [
+          0.7299392047931293,
+          0.785253746051068
+        ]
+      },
+      "f1_cv5": 0.7525298988040479
+    },
+    "CD": {
+      "threshold": 0.7924913167953491,
+      "method": "f1",
+      "n_pos": 495,
+      "n_neg": 1655,
+      "validation_metrics": {
+        "TP": 387,
+        "FP": 102,
+        "TN": 1553,
+        "FN": 108,
+        "senzitivita": 0.7818181818181819,
+        "špecificita": 0.938368580060423,
+        "precision": 0.7914110429447853,
+        "F1": 0.7865853658536586
+      },
+      "bootstrap": {
+        "n": 1000,
+        "threshold_ci95": [
+          0.7103806734085083,
+          0.8571956753730774
+        ],
+        "f1_ci95": [
+          0.758127266586077,
+          0.8122528088762492
+        ]
+      },
+      "f1_cv5": 0.7845528455284553
+    },
+    "HYP": {
+      "threshold": 0.6057739853858948,
+      "method": "f1",
+      "n_pos": 268,
+      "n_neg": 1882,
+      "validation_metrics": {
+        "TP": 203,
+        "FP": 192,
+        "TN": 1690,
+        "FN": 65,
+        "senzitivita": 0.7574626865671642,
+        "špecificita": 0.89798087141339,
+        "precision": 0.5139240506329114,
+        "F1": 0.6123680241327301
+      },
+      "bootstrap": {
+        "n": 1000,
+        "threshold_ci95": [
+          0.575157642364502,
+          0.8476506471633911
+        ],
+        "f1_ci95": [
+          0.567773469724468,
+          0.655545891574242
+        ]
+      },
+      "f1_cv5": 0.5935483870967742
+    },
+    "AFIB": {
+      "threshold": 0.9808287620544434,
+      "method": "f1",
+      "n_pos": 151,
+      "n_neg": 1999,
+      "validation_metrics": {
+        "TP": 135,
+        "FP": 15,
+        "TN": 1984,
+        "FN": 16,
+        "senzitivita": 0.8940397350993378,
+        "špecificita": 0.992496248124062,
+        "precision": 0.9,
+        "F1": 0.8970099667774086
+      },
+      "bootstrap": {
+        "n": 1000,
+        "threshold_ci95": [
+          0.9309742450714111,
+          0.9936676025390625
+        ],
+        "f1_ci95": [
+          0.8601192533702039,
+          0.9309335197266232
+        ]
+      },
+      "f1_cv5": 0.8844884488448845
+    }
+  },
+  "created_at": "2026-11-13T23:32:18+00:00"
+}

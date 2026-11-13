@@ -401,3 +401,37 @@ menší ako medzi seedmi; float32 trval 7,6 min, bf16 2,5 min. Ostávame pri bf1
 
 **Overenie:** 12 nových testov (`tests/test_train_classifier.py`), `uv run ekg-clf-compare` pre 7 behov,
 výsledky v `docs/vysledky/clf_v1/`, dokumentácia `docs/trening_klasifikatora.md`.
+
+---
+
+## 2026-11-14 – Prahy pre labely na validation (issue #17)
+
+**Kritérium určené vopred:** maximum F1 pre každý label na validation (pri zhode vyšší prah, prah
+v strede medzi susednými pravdepodobnosťami). Pri menej ako 30 pozitívnych alebo 30 negatívnych
+príkladoch náhradný prah 0,5. Požadovanú citlivosť som nezvolil – chýba klinické zdôvodnenie konkrétnej
+hodnoty.
+
+**Výsledok (`clf_v1`, validation 2 150 záznamov, 1 919 pacientov):** prahy MI 0,746 · STTC 0,724 ·
+CD 0,792 · HYP 0,606 · AFIB 0,981. Náhradný prah nebol potrebný (najmenej pozitívnych AFIB – 151).
+Macro F1: prah 0,5 → 0,708, zvolené prahy → 0,758, krížová validácia po pacientoch → 0,748.
+
+**Zistenia:**
+- Všetky prahy nad 0,5 – potvrdenie posunu pravdepodobností pri `pos_weight` z #16. AFIB (najväčšia
+  váha 13,15) má prah až 0,98: falošné poplachy 66 → 15, prehliadnuté 6 → 16.
+- Bootstrap intervaly prahov sú široké (HYP 0,58 – 0,85), ale F1 krivky sú v tejto oblasti ploché,
+  takže presná hodnota prahu F1 veľmi nemení.
+- Výber prahu na tých istých dátach nadhodnocuje F1 asi o 0,01 (krížová validácia), skutočný prírastok
+  oproti 0,5 je ~0,04.
+- bf16 vs. float32: rozdiel pravdepodobností max. 0,024, zmenených 28 z 10 750 rozhodnutí → prahy
+  počítam vo float32 a inference (#19) má tiež bežať vo float32.
+
+**Omyly počas práce:**
+- Prvá verzia hodnotila F1 iba na celej validation; až pri pohľade na výsledky som si uvedomil, že
+  prah aj F1 sú z tých istých dát → doplnená krížová validácia po pacientoch.
+- Prvý test „pri zhode vyšší prah“ nemal v skutočnosti zhodu F1 (prepočítal som ho ručne) – opravený príklad.
+- Pokus na zdôvodnenie hranice 30 pozitívnych (podvzorkovanie AFIB) mení aj podiel pozitívnych, preto
+  ho uvádzam iba ako orientačný: pri 10 pozitívnych je najhorší výsledok F1 0,60, od 30 ~0,84, prah 0,5
+  dáva 0,83.
+
+**Overenie:** 13 testov (`tests/test_label_thresholds.py`), prahy v `docs/vysledky/clf_v1/prahy.json`
+(SHA256 checkpointu), dokumentácia `docs/prahy_labelov.md`. Test množina nebola použitá.

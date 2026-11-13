@@ -87,7 +87,7 @@ súhrn: [`porovnanie_seedy.json`](vysledky/clf_v1/porovnanie_seedy.json).
 
 **Rozhodnutie: `clf_v1` = s `pos_weight`, seed 42** (beh podľa konfigurácie). Dôvody: rovnaký celkový
 výkon, stabilnejší a lepší AFIB; horšiu kalibráciu vyrieši #17, kde sa prah každého labelu nastaví
-na validation (nie pevne 0,5). Za finálny beh **nevyberám najlepší seed** (s1 mal macro AUROC 0,940),
+na validation (nie pevne 0,5) – výsledok v [prahy_labelov.md](prahy_labelov.md). Za finálny beh **nevyberám najlepší seed** (s1 mal macro AUROC 0,940),
 lebo výber najlepšieho z viacerých pokusov na validation by výsledok nadhodnotil.
 
 ## Priebeh `clf_v1`

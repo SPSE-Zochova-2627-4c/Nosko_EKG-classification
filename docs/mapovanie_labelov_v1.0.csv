@@ -1,0 +1,72 @@
+scp_code,description,kind,diagnostic_class,label
+AFIB,atrial fibrillation,rhythm,,AFIB
+LAFB,left anterior fascicular block,diagnostic,CD,CD
+IRBBB,incomplete right bundle branch block,diagnostic,CD,CD
+1AVB,first degree AV block,diagnostic,CD,CD
+IVCD,non-specific intraventricular conduction disturbance (block),diagnostic,CD,CD
+CRBBB,complete right bundle branch block,diagnostic,CD,CD
+CLBBB,complete left bundle branch block,diagnostic,CD,CD
+LPFB,left posterior fascicular block,diagnostic,CD,CD
+WPW,Wolf-Parkinson-White syndrome,diagnostic,CD,CD
+ILBBB,incomplete left bundle branch block,diagnostic,CD,CD
+3AVB,third degree AV block,diagnostic,CD,CD
+2AVB,second degree AV block,diagnostic,CD,CD
+LVH,left ventricular hypertrophy,diagnostic,HYP,HYP
+LAO/LAE,left atrial overload/enlargement,diagnostic,HYP,HYP
+RVH,right ventricular hypertrophy,diagnostic,HYP,HYP
+RAO/RAE,right atrial overload/enlargement,diagnostic,HYP,HYP
+SEHYP,septal hypertrophy,diagnostic,HYP,HYP
+IMI,inferior myocardial infarction,diagnostic,MI,MI
+ASMI,anteroseptal myocardial infarction,diagnostic,MI,MI
+ILMI,inferolateral myocardial infarction,diagnostic,MI,MI
+AMI,anterior myocardial infarction,diagnostic,MI,MI
+ALMI,anterolateral myocardial infarction,diagnostic,MI,MI
+INJAS,subendocardial injury in anteroseptal leads,diagnostic,MI,MI
+LMI,lateral myocardial infarction,diagnostic,MI,MI
+INJAL,subendocardial injury in anterolateral leads,diagnostic,MI,MI
+IPLMI,inferoposterolateral myocardial infarction,diagnostic,MI,MI
+IPMI,inferoposterior myocardial infarction,diagnostic,MI,MI
+INJIN,subendocardial injury in inferior leads,diagnostic,MI,MI
+INJLA,subendocardial injury in lateral leads,diagnostic,MI,MI
+PMI,posterior myocardial infarction,diagnostic,MI,MI
+INJIL,subendocardial injury in inferolateral leads,diagnostic,MI,MI
+NDT,non-diagnostic T abnormalities,diagnostic,STTC,STTC
+NST_,non-specific ST changes,diagnostic,STTC,STTC
+DIG,digitalis-effect,diagnostic,STTC,STTC
+LNGQT,long QT-interval,diagnostic,STTC,STTC
+ISC_,non-specific ischemic,diagnostic,STTC,STTC
+ISCAL,ischemic in anterolateral leads,diagnostic,STTC,STTC
+ISCIN,ischemic in inferior leads,diagnostic,STTC,STTC
+ISCIL,ischemic in inferolateral leads,diagnostic,STTC,STTC
+ISCAS,ischemic in anteroseptal leads,diagnostic,STTC,STTC
+ISCLA,ischemic in lateral leads,diagnostic,STTC,STTC
+ANEUR,ST-T changes compatible with ventricular aneurysm,diagnostic,STTC,STTC
+EL,electrolytic disturbance or drug (former EDIS),diagnostic,STTC,STTC
+ISCAN,ischemic in anterior leads,diagnostic,STTC,STTC
+NORM,normal ECG,diagnostic,NORM,
+ABQRS,abnormal QRS,form,,
+PVC,ventricular premature complex,form,,
+STD_,non-specific ST depression,form,,
+VCLVH,voltage criteria (QRS) for left ventricular hypertrophy,form,,
+QWAVE,Q waves present,form,,
+LOWT,low amplitude T-waves,form,,
+NT_,non-specific T-wave changes,form,,
+PAC,atrial premature complex,form,,
+LPR,prolonged PR interval,form,,
+INVT,inverted T-waves,form,,
+LVOLT,low QRS voltages in the frontal and horizontal leads,form,,
+HVOLT,high QRS voltage,form,,
+TAB_,T-wave abnormality,form,,
+STE_,non-specific ST elevation,form,,
+PRC(S),premature complex(es),form,,
+SR,sinus rhythm,rhythm,,
+STACH,sinus tachycardia,rhythm,,
+SARRH,sinus arrhythmia,rhythm,,
+SBRAD,sinus bradycardia,rhythm,,
+PACE,normal functioning artificial pacemaker,rhythm,,
+SVARR,supraventricular arrhythmia,rhythm,,
+BIGU,"bigeminal pattern (unknown origin, SV or Ventricular)",rhythm,,
+AFLT,atrial flutter,rhythm,,
+SVTAC,supraventricular tachycardia,rhythm,,
+PSVT,paroxysmal supraventricular tachycardia,rhythm,,
+TRIGU,"trigeminal pattern (unknown origin, SV or Ventricular)",rhythm,,

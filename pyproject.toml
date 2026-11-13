@@ -34,6 +34,7 @@ ekg-check = "ekg.check_env:main"
 ekg-download = "ekg.data.download:main"
 ekg-verify-data = "ekg.data.ptbxl:main"
 ekg-labels = "ekg.data.labels:main"
+ekg-splits = "ekg.data.splits:main"
 
 [build-system]
 requires = ["hatchling"]

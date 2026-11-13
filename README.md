@@ -101,6 +101,7 @@ uv run ekg-ae-report      # chyba autoencodera na validation, AUROC NORM vs. pat
 uv run ekg-calibrate-ae   # prah anomálie na validation (docs/prah_anomalie.md)
 uv run ekg-ae-analysis    # analýza chýb autoencodera (docs/analyza_autoencodera.md)
 uv run ekg-quality        # kontrola kvality záznamov (docs/kontrola_kvality.md)
+uv run ekg-explore        # prieskum datasetu, grafy (docs/prieskum_dat.md)
 ```
 
 V kóde:

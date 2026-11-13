@@ -1,0 +1,10 @@
+{
+  "záznamy": 21799,
+  "pacienti": 18869,
+  "záznamov na pacienta (max)": 10,
+  "pacienti s 1 záznamom": 16758,
+  "recording_date (rozsah v CSV)": "1984-11-09 – 2001-06-11",
+  "typy prístrojov": 11,
+  "overené človekom (validated_by_human)": 16056,
+  "mapovanie labelov": "1.0"
+}

@@ -41,6 +41,7 @@ ekg-ae-info = "ekg.models.autoencoder:main"
 ekg-clf-info = "ekg.models.classifier:main"
 ekg-train-ae = "ekg.training.train_autoencoder:main"
 ekg-ae-report = "ekg.training.report_autoencoder:main"
+ekg-calibrate-ae = "ekg.anomaly_threshold:main"
 
 [build-system]
 requires = ["hatchling"]

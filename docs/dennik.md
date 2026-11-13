@@ -226,3 +226,22 @@ to je očakávaný limit a dôvod pre Model B. Priemer cez zvody > maximum (otá
 
 **Ďalší nápad (P2):** užšie hrdlo (napr. 8 kanálov) by mohlo zväčšiť rozdiel medzi NORM a patológiou,
 lebo autoencoder by mal menej kapacity kopírovať aj nezvyčajné tvary.
+
+---
+
+## 2026-11-13 – Kalibrácia prahu anomálie (issue #13)
+
+**Postup:** na validation (454 prísny NORM vs. 1 240 s ≥ 1 labelom, 489 nejednoznačných vynechaných)
+som porovnal 7 pravidiel: priemer NORM, priemer + 2/3·std, 95./99. percentil NORM, Youden J, max F1.
+
+**Zistenia:**
+- prah zo slajdu 11 (priemer chyby NORM) označí **28 % normálnych EKG** ako anomáliu → potvrdená chyba,
+- priemer + k·std zlyháva na zošikmenom rozdelení (senzitivita 17–23 %),
+- max F1 je skreslené podielom patológie vo validation (73 %) → špecificita 34 %,
+- agregácia priemerom cez zvody je aj pri prahu lepšia ako maximum (p95: 55 % vs. 43 % senzitivita).
+
+**Rozhodnutie (spolu):** **Youden J, prah 0,03837** – senzitivita 61 %, špecificita 91 %, precision 95 %.
+Alternatíva p95 (55 % / 95 %) bola bližšie k princípu „učím sa iba z NORM“ a nezávisí od zloženia
+patológie; Youden dáva lepšie vyváženie oboch chýb. Toto obmedzenie treba uviesť v práci.
+
+Prah je uložený spolu so SHA256 checkpointu (test kontroluje, že patrí k `best.pt`).

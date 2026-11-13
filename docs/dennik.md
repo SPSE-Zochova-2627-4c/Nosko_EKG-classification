@@ -45,3 +45,24 @@ tréningového kroku malej 1D CNN na vstupe (4, 12, 1000); `uv run pytest` – 3
 
 **Overenie:** testy `tests/test_contract.py` (platné aj neplatné vstupy, poradie labelov,
 pravdepodobnosti mimo [0, 1], príklad JSON z dokumentácie sa načíta a uloží bez zmeny).
+
+---
+
+## 2026-11-13 – Stiahnutie a načítanie PTB-XL (issue #3)
+
+**Rozhodnutia:**
+- Sťahuje sa oficiálny ZIP z PhysioNet (1,84 GB, jeden súbor, pokračovanie po prerušení), nie
+  43 598 samostatných súborov – je to rýchlejšie a spoľahlivejšie.
+- Rozbalí sa iba 100 Hz časť a metadáta (~0,6 GB); 500 Hz sa dá doplniť prepínačom
+  `--with-500hz`, ak budú slabé ST labely (STTC, MI).
+- Každý súbor sa overí proti oficiálnemu `SHA256SUMS.txt` – tak je isté, že pracujem presne
+  s publikovanou verziou 1.0.3 (reprodukovateľnosť).
+- Signály sa načítavajú cez `from_wfdb()` z kontraktu (#2), takže poradie zvodov a tvar sú
+  zaručené na jednom mieste. Chybný záznam sa nikdy nevynechá potichu – overenie vypíše každý problém.
+
+**Výsledky:**
+- Sťahovanie: 1,84 GB za ~1,5 min, SHA256 ZIPu `2d98687a…aec29812`.
+- Všetkých 43 602 súborov (43 598 záznamových + 4 metadáta) má správny SHA256.
+- `ekg-verify-data`: všetkých **21 799** záznamov od **18 869** pacientov sa načítalo v tvare
+  (12, 1000) pri 100 Hz, bez NaN; 71 SCP kódov, žiadny neznámy kód. Trvanie ~3,7 min na Intel Macu.
+- Poradie zvodov v súboroch PTB-XL (`I, II, III, AVR, AVL, AVF, V1–V6`) presne zodpovedá kontraktu.

@@ -76,8 +76,28 @@ Umiestnenie dát, checkpointov a výstupov sa dá zmeniť premennými prostredia
 
 ## Dataset
 
-[PTB-XL v1.0.3](https://physionet.org/content/ptb-xl/1.0.3/) – 21 799 záznamov od 18 869 pacientov.
-Sťahovanie pripravuje issue #3.
+[PTB-XL v1.0.3](https://physionet.org/content/ptb-xl/1.0.3/) – 21 799 záznamov od 18 869 pacientov,
+licencia CC BY 4.0.
+
+```bash
+uv run ekg-download       # stiahne ZIP (1,84 GB), rozbalí 100 Hz časť (~0,6 GB), overí SHA256
+uv run ekg-verify-data    # načíta všetky záznamy a overí tvar (12, 1000)
+```
+
+Dáta skončia v `data/raw/ptb-xl/`. Podrobnosti sú v [data/README.md](data/README.md).
+
+V kóde:
+
+```python
+from ekg.data import ptbxl
+
+db = ptbxl.load_database()  # anotácie, index = ecg_id
+x = ptbxl.load_signal(db.loc[1, "filename_lr"])  # np.ndarray (12, 1000), float32
+```
+
+Citácia: Wagner, P., Strodthoff, N., Bousseljot, R., Samek, W., & Schaeffter, T. (2022).
+PTB-XL, a large publicly available electrocardiography dataset (version 1.0.3). PhysioNet.
+https://doi.org/10.13026/kfzx-aw45
 
 ## Vývoj
 

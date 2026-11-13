@@ -31,6 +31,8 @@ dev = [
 
 [project.scripts]
 ekg-check = "ekg.check_env:main"
+ekg-download = "ekg.data.download:main"
+ekg-verify-data = "ekg.data.ptbxl:main"
 
 [build-system]
 requires = ["hatchling"]

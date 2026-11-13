@@ -7,10 +7,23 @@ authors = [{ name = "Matúš Nosko" }]
 requires-python = ">=3.11,<3.13"
 dependencies = [
     # PyTorch už pre Intel Macy (x86_64) nevydáva verzie novšie ako 2.2.2.
-    # Na Macu sa preto používa 2.2.2 (iba CPU, na vývoj a testy),
-    # na Linuxe/Colabe novšia verzia (GPU prostredie rieši issue #28).
+    # Na Macu sa preto používa 2.2.2 (iba CPU, na vývoj a testy).
+    # Na Linuxe (PC s AMD RX 9070 XT, aj vo WSL2) sa inštaluje build s ROCm
+    # iba pre gfx1201 z indexu AMD – pozri [tool.uv.sources] a docs/gpu_prostredie.md (#28).
+    # Ostatné platformy (Windows, Apple Silicon) dostanú bežný torch z PyPI.
     "torch==2.2.2; sys_platform == 'darwin' and platform_machine == 'x86_64'",
-    "torch>=2.2.2; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+    "torch[device-gfx1201]>=2.14; sys_platform == 'linux'",
+    "torch>=2.2.2; sys_platform == 'win32' or (sys_platform == 'darwin' and platform_machine != 'x86_64')",
+    # Závislosti ROCm buildu torchu. Musia byť uvedené priamo, lebo uv berie
+    # [tool.uv.sources] (index AMD) iba pre priame závislosti projektu.
+    "triton; sys_platform == 'linux'",
+    "rocm; sys_platform == 'linux'",
+    "rocm-bootstrap; sys_platform == 'linux'",
+    "rocm-sdk-core; sys_platform == 'linux'",
+    "rocm-sdk-libraries; sys_platform == 'linux'",
+    "rocm-sdk-device-gfx1201; sys_platform == 'linux'",
+    "amd-torch-device-gfx1201; sys_platform == 'linux'",
+    "amd-torch-device-gfx12-0; sys_platform == 'linux'",
     # torch 2.2.2 je skompilovaný proti NumPy 1.x
     "numpy>=1.26,<2; sys_platform == 'darwin' and platform_machine == 'x86_64'",
     "numpy>=1.26; sys_platform != 'darwin' or platform_machine != 'x86_64'",
@@ -32,6 +45,7 @@ dev = [
 
 [project.scripts]
 ekg-check = "ekg.check_env:main"
+ekg-gpu-bench = "ekg.gpu_benchmark:main"
 ekg-download = "ekg.data.download:main"
 ekg-verify-data = "ekg.data.ptbxl:main"
 ekg-labels = "ekg.data.labels:main"
@@ -53,6 +67,25 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ekg"]
+
+# PyTorch s ROCm pre AMD Radeon RX 9070 XT (gfx1201) – iba na Linuxe (#28).
+# Index je "explicit": používa sa len pre balíky vymenované nižšie,
+# všetko ostatné (numpy, pandas, …) ide z PyPI.
+[[tool.uv.index]]
+name = "amd-rocm"
+url = "https://stable.repo.amd.com/rocm/whl-next/"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "amd-rocm", marker = "sys_platform == 'linux'" }
+triton = { index = "amd-rocm" }
+rocm = { index = "amd-rocm" }
+rocm-bootstrap = { index = "amd-rocm" }
+rocm-sdk-core = { index = "amd-rocm" }
+rocm-sdk-libraries = { index = "amd-rocm" }
+rocm-sdk-device-gfx1201 = { index = "amd-rocm" }
+amd-torch-device-gfx1201 = { index = "amd-rocm" }
+amd-torch-device-gfx12-0 = { index = "amd-rocm" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

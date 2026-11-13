@@ -1,0 +1,63 @@
+{
+  "run_name": "clf_v1",
+  "seed": 42,
+  "device": "cuda",
+  "amp": "bf16",
+  "torch": "2.14.0+rocm10.1.0",
+  "n_train": 17135,
+  "n_val": 2150,
+  "train_label_counts": {
+    "MI": {
+      "pos": 4379,
+      "neg": 12756,
+      "share": 0.2556
+    },
+    "STTC": {
+      "pos": 4186,
+      "neg": 12949,
+      "share": 0.2443
+    },
+    "CD": {
+      "pos": 3907,
+      "neg": 13228,
+      "share": 0.228
+    },
+    "HYP": {
+      "pos": 2119,
+      "neg": 15016,
+      "share": 0.1237
+    },
+    "AFIB": {
+      "pos": 1211,
+      "neg": 15924,
+      "share": 0.0707
+    }
+  },
+  "pos_weight_mode": "train",
+  "pos_weight": {
+    "MI": 2.913,
+    "STTC": 3.0934,
+    "CD": 3.3857,
+    "HYP": 7.0864,
+    "AFIB": 13.1495
+  },
+  "best_epoch": 20,
+  "epochs_run": 30,
+  "stopped_early": true,
+  "train_minutes_this_session": 2.51,
+  "best_val": {
+    "val_bce": 0.314308,
+    "val_macro_auroc": 0.93779,
+    "val_macro_auprc": 0.81856,
+    "auroc_MI": 0.9247,
+    "auroc_STTC": 0.93167,
+    "auroc_CD": 0.93348,
+    "auroc_HYP": 0.90744,
+    "auroc_AFIB": 0.99165,
+    "auprc_MI": 0.82039,
+    "auprc_STTC": 0.79572,
+    "auprc_CD": 0.86171,
+    "auprc_HYP": 0.67307,
+    "auprc_AFIB": 0.94189
+  }
+}

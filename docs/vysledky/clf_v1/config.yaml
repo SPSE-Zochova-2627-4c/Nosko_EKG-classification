@@ -1,0 +1,32 @@
+run_name: clf_v1
+seed: 42
+model:
+  stem_channels: 64
+  stem_kernel: 15
+  channels:
+  - 64
+  - 128
+  - 256
+  blocks:
+  - 2
+  - 2
+  - 2
+  kernel_size: 7
+  dropout: 0.3
+data:
+  train: train/classifier
+  val: val/classifier
+  batch_size: 64
+imbalance:
+  pos_weight: train
+optimizer:
+  lr: 0.001
+  weight_decay: 0.0001
+scheduler:
+  factor: 0.5
+  patience: 4
+training:
+  max_epochs: 60
+  early_stopping_patience: 10
+  min_delta: 0.0005
+  amp: bf16

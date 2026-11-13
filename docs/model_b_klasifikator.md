@@ -49,7 +49,9 @@ Model vracia **logity**. Pravdepodobnosť je P = σ(logit) = 1 / (1 + e^(−logi
 ## Nevyváženosť labelov
 
 `loss_fn(pos_weight)` prijme váhy pozitívnych príkladov pre každý label. Zriedkavé labely
-(AFIB 7 %, HYP 12 %) tak môžu mať pri tréningu väčšiu váhu. Váhy sa počítajú z train množiny v #16.
+(AFIB 7 %, HYP 12 %) tak môžu mať pri tréningu väčšiu váhu. Váhy sa počítajú z train množiny v #16
+(`pos_weight = neg / pos`, AFIB 13,15) – porovnanie s tréningom bez váh je v
+[trening_klasifikatora.md](trening_klasifikatora.md).
 
 ## Checkpoint
 

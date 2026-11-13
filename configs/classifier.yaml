@@ -1,0 +1,37 @@
+# Tréning Modelu B – multi-label klasifikátor MI, STTC, CD, HYP, AFIB (issue #16)
+# Spustenie:  uv run ekg-train-clf                          (nový beh podľa tejto konfigurácie)
+#             uv run ekg-train-clf --resume                 (pokračovať po prerušení)
+#             uv run ekg-train-clf --pos-weight none --run-name clf_v1_bez_vah   (porovnávací beh)
+
+run_name: clf_v1
+seed: 42
+
+model:                 # ClassifierConfig (#15)
+  stem_channels: 64
+  stem_kernel: 15
+  channels: [64, 128, 256]
+  blocks: [2, 2, 2]
+  kernel_size: 7
+  dropout: 0.3
+
+data:
+  train: train/classifier
+  val: val/classifier    # early stopping a výber modelu – test množina sa nepoužíva (#22)
+  batch_size: 64
+
+imbalance:
+  pos_weight: train      # train = N_neg / N_pos každého labelu z train množiny; none = bez váh
+
+optimizer:
+  lr: 0.001
+  weight_decay: 0.0001
+
+scheduler:             # ReduceLROnPlateau na val macro AUROC (vyššie = lepšie)
+  factor: 0.5
+  patience: 4
+
+training:
+  max_epochs: 60
+  early_stopping_patience: 10   # koľko epoch bez zlepšenia val macro AUROC, kým sa tréning zastaví
+  min_delta: 0.0005             # menšie zlepšenie AUROC sa nepočíta
+  amp: bf16                     # bf16 = zmiešaná presnosť na GPU (#28), none = float32

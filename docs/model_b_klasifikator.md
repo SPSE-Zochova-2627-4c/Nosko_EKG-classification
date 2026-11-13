@@ -16,7 +16,7 @@ Jeden záznam môže mať viac porúch naraz (napr. MI + CD), preto:
 | výstup | jedna trieda | ľubovoľný počet labelov |
 | pravdepodobnosti | súčet = 1 | každá zvlášť v [0, 1] |
 | loss | krížová entropia | **binárna krížová entropia pre každý label** (`BCEWithLogitsLoss`) |
-| rozhodnutie | argmax | **vlastný prah pre každý label** (#17) |
+| rozhodnutie | argmax | **vlastný prah pre každý label** ([#17](prahy_labelov.md)) |
 
 Model vracia **logity**. Pravdepodobnosť je P = σ(logit) = 1 / (1 + e^(−logit)) a dáva ju
 `predict_proba()`. `BCEWithLogitsLoss` počíta sigmoid vo vnútri numericky stabilne.

@@ -264,3 +264,20 @@ Prah je uložený spolu so SHA256 checkpointu (test kontroluje, že patrí k `be
 - Najhorší FN (MI, chyba 6× pod prahom) vyzerá úplne normálne – principiálny limit autoencodera.
 
 **Zachytená chyba:** test odhalil pád pri zázname bez SCP kódov (NaN po reindexe) – ošetrené.
+
+---
+
+## 2026-11-13 – Kontrola kvality záznamov (issue #7)
+
+**Rozhodnutia:**
+- Dve úrovne: technická platnosť (kontrakt – neplatný vstup sa nespracuje) a kvalita signálu
+  (záznam sa iba označí `ok`/`warning` s dôvodmi, nikdy sa nevyradí).
+- Pravidlá na signáli: plochý zvod (rozkmit < 0,05 mV), extrémna amplitúda (> 10 mV), saturácia
+  (≥ 100 ms na maxime > 1 mV); k tomu anotácie šumu z PTB-XL.
+
+**Výsledky (PTB-XL):** 16 781 ok, 5 018 warning (väčšinou anotácie šumu/driftu), 0 vyradených.
+Jediný plochý zvod (ecg_id 12722, V5) má v PTB-XL poznámku o elektródach V4, V5; z 25 záznamov
+nad 10 mV má 17 anotáciu šumu; spolu 18/26 signálových nálezov potvrdzuje anotácia.
+
+**Neúspešný pokus:** saturácia s prahom 5 vzoriek (50 ms) dala 3 falošné poplachy – dno pomalej vlny
+a začiatok záznamu pri rozlíšení 1 µV; sprísnené na 10 vzoriek (100 ms) → 0 nálezov v PTB-XL.

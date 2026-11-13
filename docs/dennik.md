@@ -183,3 +183,23 @@ bez nového výpočtu, lebo chyby po zvodoch sú uložené.
 **Overenie:** 15 testov s analyticky známymi výsledkami (identita = 0, posun c → c², posun v jednom
 zvode → c²/12 resp. c², sínus → 0,5, zhoda s `mse_loss`, nezávislosť od dávky, odmietnutie NaN/zlého tvaru).
 Výpočet na celej validation (2 183 záznamov) trvá 3,4 s na CPU.
+
+---
+
+## 2026-11-13 – Model B: multi-label klasifikátor 1D ResNet (issue #15)
+
+**Rozhodnutia:**
+- 1D ResNet ako základ (v benchmarku Strodthoff 2020 medzi najlepšími; jednoduchší na vysvetlenie
+  ako InceptionTime, ktorý sa porovná v #24).
+- Stem Conv k=15 + MaxPool, 3 stage-e po 2 reziduálnych blokoch (64/128/256 kanálov), hlava
+  [priemer ‖ maximum cez čas] → Dropout 0,3 → Linear(512 → 5). 2,18 mil. parametrov.
+- 5 nezávislých logitov + sigmoid, `BCEWithLogitsLoss` (voliteľne `pos_weight` pre nevyváženosť) –
+  nie softmax, lebo záznam môže mať viac porúch naraz.
+
+**Overenie:** 13 testov (tvar, sigmoid nezávislý od ostatných labelov, naučenie záznamov
+s 0/2/5 labelmi naraz, gradienty, BCE = ručný vzorec, pos_weight, bitovo rovnaký checkpoint,
+nezameniteľnosť s autoencoderom). Skutočná dávka: BCE 1,10 → 0,0003 za 60 krokov.
+
+**Poznámka:** netrénovaná sieť mala BCE 1,10, nie 0,693 – ln 2 platí iba pre logity presne 0;
+náhodné váhy dávajú rozptýlenejšie logity. Pri tréningu (#16) sa dá zvážiť inicializácia biasu
+podľa podielu pozitívnych príkladov.

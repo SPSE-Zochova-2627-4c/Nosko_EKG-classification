@@ -1,0 +1,6 @@
+,FN,iba tento label,model nedal žiadny label,predikovaný MI,predikovaný STTC,predikovaný CD,predikovaný HYP,predikovaný AFIB
+MI,109,63,47,,33,31,22,5
+STTC,120,57,40,62,,29,20,13
+CD,108,44,44,36,30,,26,11
+HYP,65,19,20,26,14,26,,5
+AFIB,16,2,2,8,7,5,0,

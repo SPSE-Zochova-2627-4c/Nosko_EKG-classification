@@ -111,7 +111,7 @@ lebo výber najlepšieho z viacerých pokusov na validation by výsledok nadhodn
 Najlepšia epocha `clf_v1` (validation): **macro AUROC 0,938**, macro AUPRC 0,819;
 AUROC MI 0,925 · STTC 0,932 · CD 0,933 · HYP 0,907 · AFIB 0,992. Benchmark Strodthoff 2020
 (superdiagnostické triedy PTB-XL, iné labely) uvádza macro AUROC ~0,93 – sme na porovnateľnej úrovni.
-Konečné vyhodnotenie s prahmi a metrikami po labeloch je v #18, na test množine až v #22.
+Konečné vyhodnotenie s prahmi a metrikami po labeloch je v [vyhodnotenie_klasifikatora.md](vyhodnotenie_klasifikatora.md) (#18), na test množine až v #22.
 
 ## bfloat16 vs. float32
 

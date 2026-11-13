@@ -435,3 +435,36 @@ Macro F1: prah 0,5 → 0,708, zvolené prahy → 0,758, krížová validácia po
 
 **Overenie:** 13 testov (`tests/test_label_thresholds.py`), prahy v `docs/vysledky/clf_v1/prahy.json`
 (SHA256 checkpointu), dokumentácia `docs/prahy_labelov.md`. Test množina nebola použitá.
+
+---
+
+## 2026-11-14 – Vyhodnotenie klasifikátora na validation (issue #18)
+
+**Postup:** `ekg-clf-report` vyhodnotí `clf_v1` s uloženými prahmi z #17 (overí SHA256 checkpointu),
+pravdepodobnosti vo float32. Pre každý label support, matica zámen, precision, recall, špecificita, F1,
+AUROC, AUPRC; nedefinovaná metrika = `null` s dôvodom (pri `clf_v1` žiadna). Macro, micro a vážené súhrny,
+metriky po záznamoch, analýza chýb.
+
+**Výsledok (validation, 2 150 záznamov):** macro F1 0,758, macro AUROC 0,938, macro AUPRC 0,819;
+micro F1 0,746. Všetkých 5 rozhodnutí správne má 62 % záznamov. Najlepší AFIB (F1 0,90), najslabší HYP
+(F1 0,61, precision 0,51).
+
+**Analýza chýb:**
+- Falošné poplachy sú väčšinou na záznamoch s inou poruchou (137 zo 199 FP pre MI), najčastejšie zámena
+  MI ↔ STTC. AFIB nemá na NORM záznamoch žiadny falošný poplach.
+- **Istota anotácie:** recall MI je 0,57 pri likelihood 15 („infarkt nie je vylúčený“) a 0,90 pri 100;
+  45 % prehliadnutých MI má likelihood 15. Mapovanie (#4) berie kódy bez ohľadu na likelihood – časť
+  „chýb“ je neistota v samotnej anotácii.
+- Podtriedy: blokády ramienok 100 %, LVH 0,83; slabé LMI 0,30, IVCD 0,51, LAO/LAE 0,49 (P vlna pri 100 Hz).
+- Vek 40–59 má nižší recall (0,66) ako ≥ 80 (0,87); príčinu som neoveril. Pohlavie bez rozdielu,
+  šum v anotácii mierne horší (F1 0,72 vs. 0,75).
+
+**Omyly počas práce:**
+- Tabuľky FP/FN mali najprv stĺpce v zlom poradí (stĺpec MI na konci, lebo riadok MI ho nemal) a vekové
+  skupiny zoradené abecedne („40–59“ pred „< 40“) – opravené.
+- V dokumentácii som najprv napísal, že „asi 40 % prehliadnutých model označí ako normálne“ a že recall
+  vo veku 40–59 je nižší „pri všetkých piatich labeloch“ – po kontrole čísel je to 31–43 % a pri AFIB
+  (iba 8 záznamov) to neplatí; opravené.
+
+**Overenie:** 13 testov (`tests/test_clf_report.py`), výsledky v `docs/vysledky/clf_v1/hodnotenie/`,
+dokumentácia `docs/vyhodnotenie_klasifikatora.md`. Test množina nebola použitá.

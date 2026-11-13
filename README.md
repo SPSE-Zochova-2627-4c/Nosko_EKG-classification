@@ -96,6 +96,8 @@ uv run ekg-preprocess     # cache signálov + normalizácia z train (docs/prepro
 uv run ekg-check-data     # kontrolný priechod celou dátovou pipeline (docs/data_loader.md)
 uv run ekg-ae-info        # architektúra autoencodera (docs/model_a_autoencoder.md)
 uv run ekg-clf-info       # architektúra klasifikátora (docs/model_b_klasifikator.md)
+uv run ekg-train-ae       # tréning autoencodera, --resume po prerušení (docs/trening_autoencodera.md)
+uv run ekg-ae-report      # chyba autoencodera na validation, AUROC NORM vs. patológia
 ```
 
 V kóde:

@@ -203,3 +203,26 @@ nezameniteľnosť s autoencoderom). Skutočná dávka: BCE 1,10 → 0,0003 za 60
 **Poznámka:** netrénovaná sieť mala BCE 1,10, nie 0,693 – ln 2 platí iba pre logity presne 0;
 náhodné váhy dávajú rozptýlenejšie logity. Pri tréningu (#16) sa dá zvážiť inicializácia biasu
 podľa podielu pozitívnych príkladov.
+
+---
+
+## 2026-11-13 – Tréning autoencodera, beh ae_v1 (issue #11)
+
+**Nastavenie:** 3 905 záznamov prísneho NORM (train), Adam lr 1e-3, dávka 64, ReduceLROnPlateau,
+max. 100 epoch, early stopping 12, seed 42. Tréning na Intel Macu (CPU) – ukázalo sa, že GPU
+pre autoencoder netreba: ~15–20 s na epochu, spolu 26,5 min.
+
+**Odolnosť voči prerušeniu:** po každej epoche sa ukladá celý stav; `--resume` pokračuje.
+Test dokazuje bitovo rovnaký výsledok ako bez prerušenia (poradie miešania závisí iba od seedu a epochy).
+
+**Výsledky:**
+- najlepšia epocha 95, val MSE 0,0255 (z 0,178 po 1. epoche); train ≈ val → bez preučenia,
+- validation: medián chyby prísny NORM 0,020; MI 0,065; STTC 0,051; CD 0,083; HYP 0,085; AFIB 0,099,
+- **AUROC prísny NORM vs. patológia 0,832** (priemer cez zvody) a 0,793 (max zvod).
+
+**Zistenia:** autoencoder bez videnia patológie rozlišuje normálne a patologické EKG; najlepšie
+poruchy tvaru QRS a rytmu (CD, HYP, AFIB), horšie ST/T zmeny (MI, STTC). Rozdelenia sa prekrývajú –
+to je očakávaný limit a dôvod pre Model B. Priemer cez zvody > maximum (otázka z #12).
+
+**Ďalší nápad (P2):** užšie hrdlo (napr. 8 kanálov) by mohlo zväčšiť rozdiel medzi NORM a patológiou,
+lebo autoencoder by mal menej kapacity kopírovať aj nezvyčajné tvary.

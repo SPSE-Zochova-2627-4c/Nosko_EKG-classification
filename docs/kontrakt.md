@@ -1,4 +1,4 @@
-# Kontrakt vstupov a výstupov (verzia schémy 1.0)
+# Kontrakt vstupov a výstupov (verzia schémy 1.1)
 
 Tento dokument určuje, čo systém prijíma a čo vracia. V kóde ho implementuje
 [`src/ekg/contract.py`](../src/ekg/contract.py). Ostatné časti projektu (loader, modely,
@@ -62,7 +62,7 @@ pravdepodobností nemusí byť 1 a pozitívnych môže byť viac labelov naraz.
 
 | Pole | Typ | Popis | Kto ho plní |
 |---|---|---|---|
-| `schema_version` | str | verzia tejto schémy, teraz `"1.0"` | – |
+| `schema_version` | str | verzia tejto schémy, teraz `"1.1"` | – |
 | `record_id` | str | identifikátor záznamu (napr. `ecg_id` z PTB-XL alebo názov súboru) | inference |
 | `model_versions` | {str: str} | verzie použitých checkpointov | #19 |
 | `anomaly.is_anomaly` | bool | `reconstruction_error >= threshold` | Model A, #13 |
@@ -76,7 +76,8 @@ pravdepodobností nemusí byť 1 a pozitívnych môže byť viac labelov naraz.
 | `consistency.note` | str \| null | vysvetlenie pri nesúlade | #19 |
 | `quality.status` | `"ok"` \| `"warning"` \| `"unknown"` | výsledok kontroly kvality (`unknown`, kým #7 nie je hotové) | #7 |
 | `quality.issues` | [str] | zoznam nájdených problémov | #7 |
-| `metadata.age` | int \| null | vek, ak je známy | #21 |
+| `metadata.age` | int \| null | vek, ak je známy (0–89) | #21 |
+| `metadata.age_over_89` | bool | `true`, ak je pacient starší ako 89 rokov – PTB-XL vtedy uvádza vek 300 (anonymizácia), `age` je `null` | #21 (od 1.1) |
 | `metadata.sex` | `"male"` \| `"female"` \| null | pohlavie (PTB-XL: 0 = muž, 1 = žena) | #21 |
 | `metadata.source` | str \| null | zdroj záznamu | #21 |
 | `disclaimer` | str | upozornenie, že nejde o diagnózu | – |
@@ -125,6 +126,14 @@ overuje, že tento príklad zodpovedá kódu.
 ```
 
 ## 3. Verzovanie schémy
+
+| Verzia | Zmena |
+|---|---|
+| 1.0 | prvá verzia (#2) |
+| 1.1 | pridané voliteľné `metadata.age_over_89` (#21) – PTB-XL anonymizuje vek > 89 hodnotou 300 |
+
+Formálna JSON schéma: [`schema/vystup_v1.1.schema.json`](schema/vystup_v1.1.schema.json). Export do JSON/CSV: [export.md](export.md).
+
 
 - Pridanie nového **voliteľného** poľa → `1.x` (napr. `1.1`).
 - Zmena významu, premenovanie alebo odstránenie poľa, zmena poradia labelov či zvodov → `2.0`.

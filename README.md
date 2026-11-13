@@ -124,4 +124,6 @@ uv run ruff format .     # formátovanie
 uv add <balík>           # pridanie novej knižnice
 ```
 
+Výstup systému: [docs/kontrakt.md](docs/kontrakt.md) (schéma 1.1), export do JSON/CSV: [docs/export.md](docs/export.md).
+
 Rozhodnutia a ich dôvody (aj neúspešné pokusy) sa zapisujú do [docs/dennik.md](docs/dennik.md).

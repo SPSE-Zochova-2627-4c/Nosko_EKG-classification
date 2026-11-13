@@ -60,9 +60,10 @@
   },
   "metadata": {
     "age": 63,
+    "age_over_89": false,
     "sex": "male",
     "source": "PTB-XL"
   },
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza."
 }

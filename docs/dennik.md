@@ -281,3 +281,19 @@ nad 10 mV má 17 anotáciu šumu; spolu 18/26 signálových nálezov potvrdzuje 
 
 **Neúspešný pokus:** saturácia s prahom 5 vzoriek (50 ms) dala 3 falošné poplachy – dno pomalej vlny
 a začiatok záznamu pri rozlíšení 1 µV; sprísnené na 10 vzoriek (100 ms) → 0 nálezov v PTB-XL.
+
+---
+
+## 2026-11-13 – Metadáta a export do JSON/CSV (issue #21)
+
+**Zistenie:** PTB-XL uvádza vek **300** pre 293 pacientov starších ako 89 rokov (anonymizácia).
+Taký vek nesmie ísť do výstupu, ale ani „90“ by nebol pravdivý → `age = null` a nové pole
+`age_over_89 = true`. Ide o rozšírenie kontraktu → **schéma 1.1** (voliteľné pole, 1.0 sa dá stále načítať).
+
+**Zachytený problém:** checkpoint porovnával pri načítaní celý kontrakt vrátane verzie schémy – zmena
+na 1.1 by odmietla už natrénovaný `ae_v1`. Verzia výstupného formátu s váhami nesúvisí, porovnávajú sa
+už len zvody, labely, frekvencia a dĺžka.
+
+**Export:** JSON (vnorený, formálna JSON schéma s rozsahmi hodnôt) a CSV (51 stĺpcov, chýbajúce =
+prázdne, presný zápis čísel). Oba sa dajú načítať späť na rovnaké objekty – overené testami aj na
+hodnote 0,1 + 0,2.

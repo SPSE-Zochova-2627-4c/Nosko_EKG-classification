@@ -131,3 +131,21 @@ Prísny NORM: 3 905 / 454 / 464.
 
 **Na neskôr:** filter 0,5 Hz je štandardná voľba; ak budú slabé STTC/MI, dá sa porovnať aj bez filtra
 (`highpass_hz=None`) alebo s 0,05 Hz.
+
+---
+
+## 2026-11-13 – Dátový loader (issue #9)
+
+**Rozhodnutia:**
+- `EKGDataset` vracia `signal (12, 1000)`, `target (5)` a `ecg_id`; podmnožiny `classifier` (Model B),
+  `strict_norm` (Model A) a `all`.
+- Preload spracovaných signálov do RAM (train ≈ 0,8 GB, Mac má 16 GB) – rýchly tréning.
+- Seed cez vlastný `torch.Generator`; validation a test sa nikdy nemiešajú.
+
+**Overenie (`ekg-check-data`, ~26 s):** všetky dávky v train/val/test majú správny tvar a konečné
+hodnoty, ciele sedia s manifestom, signál z loadera je zhodný s priamym načítaním z WFDB, každý záznam
+je v epoche práve raz, prísny NORM má ciele 0, prekrývanie pacientov 0, seed je reprodukovateľný.
+
+**Zachytená chyba:** pandas 3 vracia z `to_numpy()` pole iba na čítanie a PyTorch na to upozorňuje
+(zápis do takého tenzora má nedefinované správanie) – opravené kópiou; testy teraz bežia aj s
+`-W error::UserWarning`.

@@ -93,6 +93,7 @@ Mapovanie labelov a rozdelenie dát:
 uv run ekg-labels         # počty labelov a prísneho NORM (docs/mapovanie_labelov.md)
 uv run ekg-splits --check # overí manifest manifests/splits_v1.0.csv (docs/rozdelenie_dat.md)
 uv run ekg-preprocess     # cache signálov + normalizácia z train (docs/preprocessing.md)
+uv run ekg-check-data     # kontrolný priechod celou dátovou pipeline (docs/data_loader.md)
 ```
 
 V kóde:

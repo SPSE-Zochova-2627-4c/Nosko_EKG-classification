@@ -362,3 +362,42 @@ Zmiešaná presnosť bfloat16 je 4–5× rýchlejšia ako float32 a nepotrebuje 
 
 **Overenie:** `uv run ekg-check` → „zariadenie: ROCm – AMD Radeon RX 9070 XT“; `uv run ekg-gpu-bench`;
 `uv run pytest -q -W error::UserWarning` na PC (testy GPU sa na Macu preskočia).
+
+---
+
+## 2026-11-13 – Tréning klasifikátora, beh clf_v1 (issue #16)
+
+**Nastavenie:** `ResNet1dClassifier` na 17 135 záznamoch (train), validation 2 150, Adam lr 1e-3,
+weight decay 1e-4, dávka 64, bfloat16 na GPU, max. 60 epoch, early stopping 10 epoch, seed 42.
+Jeden beh na RX 9070 XT trvá ~2,5 min (~4 s na epochu) – na Macu by to bolo hodiny.
+
+**Rozhodnutie 1 – výber modelu podľa val macro AUROC, nie val loss:** beh s `pos_weight` a beh bez neho
+optimalizujú inú loss, ich straty sa nedajú porovnať. AUROC nezávisí od prahu (prahy až v #17).
+
+**Rozhodnutie 2 – `pos_weight = neg / pos` z train** (MI 2,91, STTC 3,09, CD 3,39, HYP 7,09, AFIB 13,15).
+Porovnanie s tréningom bez váh, každá varianta 3 seedy (42, 1, 2):
+- macro AUROC rovnaké: 0,939 ± 0,001 (s váhami) vs. 0,939 ± 0,002 (bez váh), macro AUPRC 0,819 oboje,
+- AFIB s váhami lepší vo všetkých seedoch: AUROC 0,993 vs. 0,989, AUPRC 0,939 ± 0,006 vs. 0,925 ± 0,019,
+- MI, STTC, CD, HYP – rozdiely v rozsahu rozptylu medzi seedmi,
+- cena: horšia kalibrácia (nevážené val BCE 0,296 vs. 0,224) – rieši #17 prahmi na validation.
+→ `clf_v1` = s `pos_weight`, seed 42 (podľa konfigurácie, nie najlepší seed – to by nadhodnotilo výsledok).
+
+**Výsledok clf_v1 (validation, najlepšia epocha 20 z 30):** macro AUROC **0,938**, macro AUPRC 0,819;
+AUROC MI 0,925, STTC 0,932, CD 0,933, HYP 0,907, AFIB 0,992. Porovnateľné s benchmarkom
+(Strodthoff 2020, ~0,93). HYP je najslabší (AUPRC 0,67), ako sa čakalo.
+
+**bf16 vs. float32 (overenie odporúčania z #28):** macro AUROC 0,938 vs. 0,939, AUPRC rovnaké – rozdiel
+menší ako medzi seedmi; float32 trval 7,6 min, bf16 2,5 min. Ostávame pri bf16.
+
+**Omyly a zistenia počas práce:**
+- Pri sledovaní tréningu som predpokladal, že zlepšenie v epoche 20 spôsobilo zníženie lr – nebolo to tak,
+  lr klesol až v epoche 25 (overené v `metrics.csv`). Po znížení lr train loss prudko klesá, validation nie
+  (začiatok preučenia) – early stopping zastavil včas.
+- Čakal som, že váhy pomôžu aj HYP (12 %) – nepomohli.
+- Súbory vytvorené z Windows cez `\wsl.localhost` patrili používateľovi root (inštancia WSL bola prvýkrát
+  spustená ako root kvôli apt) a ruff ich nemohol preformátovať → `chown` a reštart WSL, odvtedy v poriadku.
+- Na GPU nie je tréning bitovo reprodukovateľný (MIOpen) – preto porovnanie cez viac seedov. Bitovú
+  zhodu po prerušení a `--resume` overuje test na CPU.
+
+**Overenie:** 12 nových testov (`tests/test_train_classifier.py`), `uv run ekg-clf-compare` pre 7 behov,
+výsledky v `docs/vysledky/clf_v1/`, dokumentácia `docs/trening_klasifikatora.md`.

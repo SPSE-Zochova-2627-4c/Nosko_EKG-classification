@@ -1,0 +1,353 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ekg-prediction-v1.1",
+  "title": "Výstup systému detekcie anomálií a klasifikácie EKG (schéma 1.1)",
+  "description": "Jeden záznam = jeden PredictionResult. Súbor z export.to_json() obsahuje zoznam v poli results.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.1"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "disclaimer": {
+      "type": "string"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/result"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "results"
+  ],
+  "$defs": {
+    "result": {
+      "type": "object",
+      "properties": {
+        "record_id": {
+          "type": "string"
+        },
+        "model_versions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "anomaly": {
+          "type": "object",
+          "properties": {
+            "is_anomaly": {
+              "type": "boolean"
+            },
+            "reconstruction_error": {
+              "type": "number",
+              "minimum": 0
+            },
+            "threshold": {
+              "type": "number"
+            },
+            "error_per_lead": {
+              "type": "object",
+              "properties": {
+                "I": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "II": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "III": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "AVR": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "AVL": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "AVF": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "V1": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "V2": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "V3": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "V4": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "V5": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "V6": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "I",
+                "II",
+                "III",
+                "AVR",
+                "AVL",
+                "AVF",
+                "V1",
+                "V2",
+                "V3",
+                "V4",
+                "V5",
+                "V6"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "is_anomaly",
+            "reconstruction_error",
+            "threshold",
+            "error_per_lead"
+          ],
+          "additionalProperties": false
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "MI": {
+              "type": "object",
+              "properties": {
+                "probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "threshold": {
+                  "type": "number"
+                },
+                "positive": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "probability",
+                "threshold",
+                "positive"
+              ],
+              "additionalProperties": false
+            },
+            "STTC": {
+              "type": "object",
+              "properties": {
+                "probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "threshold": {
+                  "type": "number"
+                },
+                "positive": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "probability",
+                "threshold",
+                "positive"
+              ],
+              "additionalProperties": false
+            },
+            "CD": {
+              "type": "object",
+              "properties": {
+                "probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "threshold": {
+                  "type": "number"
+                },
+                "positive": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "probability",
+                "threshold",
+                "positive"
+              ],
+              "additionalProperties": false
+            },
+            "HYP": {
+              "type": "object",
+              "properties": {
+                "probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "threshold": {
+                  "type": "number"
+                },
+                "positive": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "probability",
+                "threshold",
+                "positive"
+              ],
+              "additionalProperties": false
+            },
+            "AFIB": {
+              "type": "object",
+              "properties": {
+                "probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "threshold": {
+                  "type": "number"
+                },
+                "positive": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "probability",
+                "threshold",
+                "positive"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "MI",
+            "STTC",
+            "CD",
+            "HYP",
+            "AFIB"
+          ],
+          "additionalProperties": false
+        },
+        "consistency": {
+          "type": "object",
+          "properties": {
+            "models_agree": {
+              "type": "boolean"
+            },
+            "note": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "models_agree",
+            "note"
+          ],
+          "additionalProperties": false
+        },
+        "quality": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "ok",
+                "warning",
+                "unknown"
+              ]
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status",
+            "issues"
+          ],
+          "additionalProperties": false
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "age": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 89
+            },
+            "age_over_89": {
+              "type": "boolean"
+            },
+            "sex": {
+              "enum": [
+                "male",
+                "female",
+                null
+              ]
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "age",
+            "age_over_89",
+            "sex",
+            "source"
+          ],
+          "additionalProperties": false
+        },
+        "schema_version": {
+          "const": "1.1"
+        },
+        "disclaimer": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "model_versions",
+        "anomaly",
+        "labels",
+        "consistency",
+        "quality",
+        "metadata",
+        "schema_version",
+        "disclaimer"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

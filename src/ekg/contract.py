@@ -18,7 +18,10 @@ import numpy as np
 
 # --- Vstup -------------------------------------------------------------------
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
+# Verzie, ktoré vie from_dict() načítať. 1.1 pridala voliteľné metadata.age_over_89 (#21);
+# staršie výstupy sa pri načítaní povýšia na aktuálnu verziu.
+SUPPORTED_SCHEMA_VERSIONS = ("1.0", "1.1")
 
 # Poradie zvodov presne podľa PTB-XL (atribút sig_name vo WFDB záznamoch).
 LEADS: tuple[str, ...] = (
@@ -159,6 +162,7 @@ class Metadata:
     """Dostupné metadáta záznamu. Chýbajúce hodnoty sú None, nikdy sa nevymýšľajú."""
 
     age: int | None = None
+    age_over_89: bool = False  # PTB-XL anonymizuje vek > 89 (uvádza 300) → age = None, toto True
     sex: Sex | None = None
     source: str | None = None  # napr. "PTB-XL" alebo názov súboru
 
@@ -195,10 +199,10 @@ class PredictionResult:
     @classmethod
     def from_dict(cls, data: dict) -> PredictionResult:
         """Načíta výstup späť zo slovníka (napr. z JSON exportu) a znovu ho overí."""
-        if data.get("schema_version") != SCHEMA_VERSION:
+        if data.get("schema_version") not in SUPPORTED_SCHEMA_VERSIONS:
             raise ValueError(
                 f"Nepodporovaná verzia schémy {data.get('schema_version')!r}, "
-                f"očakáva sa {SCHEMA_VERSION!r}."
+                f"podporované sú {SUPPORTED_SCHEMA_VERSIONS}."
             )
         return cls(
             record_id=data["record_id"],
@@ -208,7 +212,7 @@ class PredictionResult:
             consistency=Consistency(**data["consistency"]),
             quality=Quality(**data["quality"]),
             metadata=Metadata(**data["metadata"]),
-            schema_version=data["schema_version"],
+            schema_version=SCHEMA_VERSION,  # staršia verzia sa povýši
             disclaimer=data["disclaimer"],
         )
 

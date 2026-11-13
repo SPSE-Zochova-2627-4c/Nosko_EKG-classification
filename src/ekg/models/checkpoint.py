@@ -60,7 +60,10 @@ def load(path: Path, model_type: str) -> dict:
         raise ValueError(f"Neznámy formát checkpointu: {ckpt.get('format')!r}")
     if ckpt["model_type"] != model_type:
         raise ValueError(f"Checkpoint je {ckpt['model_type']!r}, očakáva sa {model_type!r}.")
-    if ckpt["contract"] != contract_info():
+    # verzia výstupnej schémy s váhami modelu nesúvisí – porovnáva sa iba to, čo model ovplyvňuje
+    model_contract = {key: v for key, v in ckpt["contract"].items() if key != "schema_version"}
+    expected = {key: v for key, v in contract_info().items() if key != "schema_version"}
+    if model_contract != expected:
         raise ValueError(
             "Checkpoint bol vytvorený s iným kontraktom (zvody, labely, dĺžka signálu): "
             f"{ckpt['contract']}"

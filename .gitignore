@@ -1,0 +1,30 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# --- Dáta (PTB-XL má ~3 GB, do gitu nepatrí) ---
+data/*
+!data/README.md
+
+# --- Natrénované modely a výstupy experimentov ---
+checkpoints/*
+!checkpoints/.gitkeep
+outputs/*
+!outputs/.gitkeep
+runs/
+*.pt
+*.pth
+*.ckpt
+
+# --- Lokálne nastavenia ---
+.env
+.DS_Store
+.vscode/
+.idea/

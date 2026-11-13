@@ -109,3 +109,25 @@ a foldy 9–10 sú overené človekom; navyše sú výsledky porovnateľné s be
 **Výsledok:** 17 418 / 2 183 / 2 198 záznamov (15 023 / 1 942 / 1 904 pacientov), prekrývanie
 pacientov 0. Podiely labelov sa medzi množinami líšia najviac o 0,5 p. b. (napr. AFIB 7,1 / 7,0 / 7,0 %).
 Prísny NORM: 3 905 / 454 / 464.
+
+---
+
+## 2026-11-13 – Preprocessing a normalizácia (issue #8)
+
+**Rozhodnutia (preprocessing v1.0):**
+- Hornopriepustný Butterworth filter 0,5 Hz, 2. rád, nulová fáza – odstráni drift, nedeformuje ST segment.
+- Z-score po zvodoch s mean/std z **celej train množiny** (nie z každého záznamu): normalizácia
+  každého záznamu zvlášť by zmazala absolútnu amplitúdu, ktorá je dôležitá napr. pre HYP.
+- Bez dolnopriepustného filtra – pri 100 Hz nie je potrebný.
+- Parametre v `manifests/preprocessing_v1.0.json` (v gite) aj s informáciou, z čoho vznikli
+  (split, počet záznamov, SHA256 manifestu).
+- Cache surových signálov (1 GB, `data/processed/`) – načítanie všetkých záznamov z ~4 min na sekundy.
+
+**Výsledky:**
+- std po zvodoch 0,13–0,32 mV; hrudné zvody V2–V4 majú ~2× väčšiu amplitúdu ako končatinové.
+- Validation po normalizácii: priemer 0,000, std 0,978 (nie presne 1 – správne, parametre sú z train).
+- Príklad ecg_id 2043: drift 1,12 mV → 0,01 mV, tvar QRS/ST/T zachovaný (docs/obrazky/preprocessing_priklad.png).
+- Opakovaný fit dá bitovo rovnaké parametre (deterministické).
+
+**Na neskôr:** filter 0,5 Hz je štandardná voľba; ak budú slabé STTC/MI, dá sa porovnať aj bez filtra
+(`highpass_hz=None`) alebo s 0,05 Hz.

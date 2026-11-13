@@ -317,3 +317,48 @@ v práci uvádzam obdobie z popisu datasetu a dátumy z CSV nepoužívam.
 - Vek: medián NORM 54, patológie 67–71 rokov → vek je zmätočný faktor (#26, #30).
 - MI a CD častejšie u mužov (38–39 % žien vs. 54 % pri NORM).
 - AFIB má najviac záznamov s varovaním kvality (28,6 %).
+
+---
+
+## 2026-11-13 – Tréningové prostredie s GPU (issue #28)
+
+**Rozhodnutie:** trénuje sa na PC s AMD RX 9070 XT vo **WSL2 (Ubuntu 24.04)**, PyTorch **2.14.0 + ROCm 10.1**
+z indexu AMD, iba pre architektúru karty (gfx1201). Na Linuxe ho `uv sync` nainštaluje sám, Intel Mac
+ostáva na torch 2.2.2 (CPU). Záloha: Colab notebook s predinštalovaným PyTorch (CUDA).
+
+**Dôvody:**
+- WSL2 namiesto dual-bootu – netreba preinštalovať počítač. Od ROCm 7.13 je prístup ku GPU vo WSL
+  (ROCDXG cez Windows ovládač) priamo v runtime, takže do Ubuntu netreba inštalovať ROCm ani ovládač.
+- Index AMD namiesto indexu PyTorch: torch z `download.pytorch.org/whl/rocm10.0` vyžaduje knižnice pre
+  všetky GPU od AMD (`rocm[device-all]`); `torch[device-gfx1201]` od AMD je ~1,6 GB na stiahnutie.
+
+**Neúspešné pokusy a omyly:**
+- Prvé `uv sync` na PC sťahovalo torch 2.2.2 z PyPI s 12 balíkmi NVIDIA CUDA (na AMD nepoužiteľné)
+  rýchlosťou ~0,5 MB/s – zastavené.
+- Skúšobná inštalácia z indexu PyTorch sťahovala knižnice pre všetky GPU (po ~4 GB stále nekončila) – zastavené.
+- `uv lock` hlásil chybu pre Python 3.12, tak som Linux obmedzil na 3.11 – chyba ostala. Skutočná príčina:
+  `explicit` index sa v uv uplatní iba na **priame** závislosti; balíky ROCm (triton, rocm-sdk-…) sú preto
+  uvedené priamo v `pyproject.toml` s markerom pre Linux. Obmedzenie na 3.11 som vrátil.
+- `ekg-check` prešiel, ale tréning skutočných modelov na GPU padal (`miopenStatusUnknownError` v BatchNorm):
+  MIOpen kompiluje kernely pri prvom použití a čisté Ubuntu nemá hlavičky C → `apt install libc6-dev`.
+  Malá sieť v `ekg-check` BatchNorm nemá, preto chybu neodhalila → nové testy trénujú na GPU oba modely.
+- Import torchu najprv padol na chýbajúcom `libgomp.so.1` → `apt install libgomp1`.
+
+**Výsledok – rýchlosť tréningového kroku** (`ekg-gpu-bench`, dávka 64, ms/krok):
+
+| model | CPU Ryzen 7 7800X3D | GPU float32 | GPU bfloat16 |
+|---|---|---|---|
+| autoencoder | 69,4 | 43,5 (1,6×) | 10,5 (6,6×) |
+| klasifikátor | 117,2 | 41,9 (2,8×) | 9,1 (12,9×) |
+
+**Zistenie:** vo float32 je GPU len 1,6–2,8× rýchlejšie ako CPU. MIOpen pre viaceré naše 1D konvolúcie
+(stride 2, spätné šírenie) volí pomalé záložné algoritmy (~1 500 kernelov na krok, čas lineárne s dávkou).
+Nepomohlo `MIOPEN_FIND_MODE=NORMAL` ani `cudnn.benchmark`; bez MIOpen bolo ešte 2× pomalšie.
+Zmiešaná presnosť bfloat16 je 4–5× rýchlejšia ako float32 a nepotrebuje `GradScaler`.
+
+**Dôsledky:**
+- #16: trénovať s `torch.autocast("cuda", dtype=torch.bfloat16)` a overiť, že metriky sa nelíšia od float32.
+- Zapísané verzie a celý postup inštalácie: `docs/gpu_prostredie.md`.
+
+**Overenie:** `uv run ekg-check` → „zariadenie: ROCm – AMD Radeon RX 9070 XT“; `uv run ekg-gpu-bench`;
+`uv run pytest -q -W error::UserWarning` na PC (testy GPU sa na Macu preskočia).

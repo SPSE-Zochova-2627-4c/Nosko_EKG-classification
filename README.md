@@ -53,10 +53,18 @@ aj všetky knižnice podľa `uv.lock`, takže prostredie je na každom počíta�
 | Počítač | PyTorch | Použitie |
 |---|---|---|
 | Intel Mac | 2.2.2, iba CPU (novšie verzie pre Intel Mac neexistujú) | písanie kódu, testy, malé pokusy |
-| PC s AMD RX 9070 XT (Linux, ROCm) | novšia verzia s ROCm – issue #28 | trénovanie |
-| Google Colab / Kaggle | predinštalovaná verzia s CUDA | záloha na trénovanie |
+| PC s AMD RX 9070 XT (WSL2 Ubuntu 24.04) | 2.14.0 + ROCm 10.1 iba pre gfx1201 (index AMD) | trénovanie |
+| Google Colab / Kaggle | predinštalovaná verzia s CUDA ([notebook](notebooks/colab_trening.ipynb)) | záloha na trénovanie |
 
-Kód sa preto píše tak, aby fungoval s PyTorch 2.2 aj novším.
+Na Linuxe `uv sync` sám nainštaluje PyTorch s ROCm z indexu AMD (`[tool.uv.sources]` v `pyproject.toml`).
+Ubuntu potrebuje navyše systémové balíky `libgomp1` a `libc6-dev`. Celý postup, zapísané verzie,
+rýchlosť CPU vs. GPU a synchronizácia Mac ↔ PC: [docs/gpu_prostredie.md](docs/gpu_prostredie.md).
+
+```bash
+uv run ekg-gpu-bench      # rýchlosť tréningu CPU vs. GPU (float32 aj bfloat16)
+```
+
+Kód sa píše tak, aby fungoval s PyTorch 2.2 aj novším.
 
 ## Štruktúra
 

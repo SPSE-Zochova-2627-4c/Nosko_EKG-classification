@@ -45,6 +45,7 @@ ekg-ae-report = "ekg.training.report_autoencoder:main"
 ekg-calibrate-ae = "ekg.anomaly_threshold:main"
 ekg-ae-analysis = "ekg.evaluation.ae_analysis:main"
 ekg-quality = "ekg.quality:main"
+ekg-explore = "ekg.data.explore:main"
 
 [build-system]
 requires = ["hatchling"]

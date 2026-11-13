@@ -297,3 +297,23 @@ už len zvody, labely, frekvencia a dĺžka.
 **Export:** JSON (vnorený, formálna JSON schéma s rozsahmi hodnôt) a CSV (51 stĺpcov, chýbajúce =
 prázdne, presný zápis čísel). Oba sa dajú načítať späť na rovnaké objekty – overené testami aj na
 hodnote 0,1 + 0,2.
+
+---
+
+## 2026-11-13 – Prieskum datasetu (issue #5)
+
+**Opravy pôvodných predpokladov:** záznamy sú z **11 typov prístrojov** (nie jedného); jeden zdroj
+(jedna inštitúcia, jeden výrobca) však platí.
+
+**Neistota, ktorú som takmer prehliadol:** stĺpec `recording_date` má dátumy 1984–2001, popis datasetu
+uvádza 10/1989–6/1996. Najprv som to chcel zapísať ako „opravu“, ale 41 % záznamov je mimo obdobia
+z popisu – nejde o odľahlé hodnoty. Pravdepodobne posun dátumov pri anonymizácii, neoverené →
+v práci uvádzam obdobie z popisu datasetu a dátumy z CSV nepoužívam.
+
+**Zistenia:**
+- 25 % záznamov má 2+ poruchy → potvrdzuje multi-label prístup.
+- AFIB je takmer vždy s inou poruchou (60 % aj STTC, 40 % aj MI); 57 % HYP má aj STTC.
+- NORM + CD 415 záznamov (napr. inkompletná blokáda pravého ramienka ako variant normy).
+- Vek: medián NORM 54, patológie 67–71 rokov → vek je zmätočný faktor (#26, #30).
+- MI a CD častejšie u mužov (38–39 % žien vs. 54 % pri NORM).
+- AFIB má najviac záznamov s varovaním kvality (28,6 %).

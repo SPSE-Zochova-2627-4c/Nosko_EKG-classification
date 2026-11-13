@@ -66,3 +66,27 @@ pravdepodobnosti mimo [0, 1], príklad JSON z dokumentácie sa načíta a ulož�
 - `ekg-verify-data`: všetkých **21 799** záznamov od **18 869** pacientov sa načítalo v tvare
   (12, 1000) pri 100 Hz, bez NaN; 71 SCP kódov, žiadny neznámy kód. Trvanie ~3,7 min na Intel Macu.
 - Poradie zvodov v súboroch PTB-XL (`I, II, III, AVR, AVL, AVF, V1–V6`) presne zodpovedá kontraktu.
+
+---
+
+## 2026-11-13 – Mapovanie labelov a výber NORM (issue #4)
+
+**Zistenia z dát:**
+- MI, STTC, CD, HYP sú supertriedy v `diagnostic_class` (14, 13, 11 a 5 SCP kódov).
+- **AFIB nie je supertrieda, ale rytmický kód**, a likelihood má takmer vždy 0 (1 466 z 1 514).
+  Prah likelihood by AFIB prakticky odstránil – dôležité poučenie, čo by som bez pozretia do dát prehliadol.
+- 37 záznamov má NORM aj AFIB súčasne (NORM = tvar, AFIB = rytmus).
+- Foldy 9 a 10 (validation, test) sú celé overené človekom (`validated_by_human`).
+
+**Rozhodnutia (mapovanie v1.0):**
+- MI/STTC/CD/HYP: všetky diagnostické kódy bez prahu likelihood – ako benchmark Strodthoff et al. 2020,
+  aby sa dali porovnať výsledky. Alternatívy (≥ 50, = 100) sú zdokumentované s počtami.
+- AFIB: kód AFIB bez ohľadu na likelihood; flutter (AFLT) sa nezaratúva.
+- 348 záznamov bez diagnostického kódu aj bez AFIB sa z Modelu B vynechá.
+- Prísny NORM pre autoencoder: NORM 100, žiadny iný diagnostický kód, rytmus iba SR, bez šumu,
+  driftu, extra beats, kardiostimulátora a form kódov → **3 905 train / 454 val / 464 test**
+  (z pôvodných 9 514 záznamov s NORM). `validated_by_human` sa nevyžaduje.
+
+**Overenie:** 21 testov – modelové príklady (čistý NORM, NORM s patológiou, AFIB s likelihood 0,
+viac labelov, iba flutter, NORM so šumom/PVC) aj presné počty na skutočnom PTB-XL;
+CSV mapovacia tabuľka je testom zviazaná s kódom.

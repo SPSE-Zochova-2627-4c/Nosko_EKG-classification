@@ -36,6 +36,7 @@ ekg-verify-data = "ekg.data.ptbxl:main"
 ekg-labels = "ekg.data.labels:main"
 ekg-splits = "ekg.data.splits:main"
 ekg-preprocess = "ekg.preprocessing:main"
+ekg-check-data = "ekg.data.check_pipeline:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -46,6 +47,7 @@ packages = ["src/ekg"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

@@ -20,6 +20,10 @@ prahy labelov, pravidlo súladu – padli predtým na train a validation.
 | 2 | **zmrazenie**: SHA256 44 súborov – checkpointy `ae_v1` a `clf_v1`, prah anomálie, prahy labelov, parametre preprocessingu, manifest rozdelenia, mapovanie labelov, `uv.lock` a celý kód `src/ekg` + verzie | [`zmrazenie.json`](vysledky/test/zmrazenie.json), commit `a96600e` **pred** vyhodnotením |
 | 3 | vyhodnotenie **raz**: najprv overí, že sa od zmrazenia nezmenil ani jeden súbor, potom spustí zmrazenú pipeline (#19) na všetkých test záznamoch | [`report.json`](vysledky/test/report.json): `freeze_sha256`, `freeze_check: OK`, `git_commit` |
 
+- Hash `a96600e` (a `git_commit` v reporte) je commit vo vetve
+  [PR #54](https://github.com/SPSE-Zochova-2627-4c/Nosko_EKG-classification/pull/54) – tam je vidieť
+  poradie „zmrazenie → výsledky“. Merge cez rebase vytvorí na `main` rovnaké commity s inými hashmi;
+  obsah zmrazenia overí kedykoľvek `uv run ekg-final-eval --check`.
 - Vyhodnotenie **existujúce výsledky neprepíše** a pri akejkoľvek zmene modelu, prahu, dát alebo kódu
   sa odmietne spustiť (testy).
 - Test množinu v kóde otvára iba záverečné vyhodnotenie a technická kontrola dát z #9, ktorá nespúšťa

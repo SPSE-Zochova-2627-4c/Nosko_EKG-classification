@@ -112,6 +112,8 @@ uv run ekg-clf-compare clf_v1 clf_v1_bez_vah   # porovnanie behov klasifikátora
 uv run ekg-calibrate-clf  # prahy pre labely na validation (docs/prahy_labelov.md)
 uv run ekg-clf-report     # vyhodnotenie klasifikátora a analýza chýb (docs/vyhodnotenie_klasifikatora.md)
 uv run ekg-predict --ecg-id 10   # oba modely na jednom zázname: anomaly score + 5 porúch (docs/inference.md)
+uv run ekg-show --ecg-id 127     # obrázok: 12 zvodov, rekonštrukcia, výsledky (docs/zobrazenie.md)
+uv run streamlit run streamlit_app.py   # web aplikácia s rovnakým prehľadom (docs/zobrazenie.md)
 uv run ekg-ae-analysis    # analýza chýb autoencodera (docs/analyza_autoencodera.md)
 uv run ekg-quality        # kontrola kvality záznamov (docs/kontrola_kvality.md)
 uv run ekg-explore        # prieskum datasetu, grafy (docs/prieskum_dat.md)

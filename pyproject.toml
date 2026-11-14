@@ -34,6 +34,10 @@ dependencies = [
     "matplotlib>=3.8",
     "pyyaml>=6.0",
     "tqdm>=4.66",
+    # web aplikácia (#20); pyarrow (tabuľky v Streamlite) od verzie 26 nepodporuje NumPy 1.x,
+    # ktorý je v lock súbore kvôli Intel Macu (torch 2.2.2)
+    "streamlit>=1.57",
+    "pyarrow<26",
 ]
 
 [dependency-groups]
@@ -62,6 +66,7 @@ ekg-clf-compare = "ekg.training.train_classifier:compare_main"
 ekg-calibrate-clf = "ekg.label_thresholds:main"
 ekg-clf-report = "ekg.evaluation.clf_report:main"
 ekg-predict = "ekg.inference:main"
+ekg-show = "ekg.visualization:main"
 ekg-ae-analysis = "ekg.evaluation.ae_analysis:main"
 ekg-quality = "ekg.quality:main"
 ekg-explore = "ekg.data.explore:main"

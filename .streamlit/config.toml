@@ -1,0 +1,9 @@
+# Nastavenia web aplikácie (streamlit_app.py, #20)
+
+[theme]
+# Obrázok EKG je z matplotlibu (biele pozadie) – svetlá téma, aby nevznikol biely blok v tmavej
+base = "light"
+
+[browser]
+# neposielať anonymné štatistiky používania Streamlitu
+gatherUsageStats = false

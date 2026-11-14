@@ -502,3 +502,31 @@ klasifikátora od #17 max. o 7·10⁻⁷, žiadne zmenené rozhodnutie. 15 testo
   (`records100/00000/00009_lr`) by ho obišla → záznamy PTB-XL zadané cestou sa spracujú rovnako ako `--ecg-id`.
 - Pri kontrole návratového kódu cez `wsl … bash -c '…; echo $?'` vyšlo 0 namiesto 1 – `$?` rozbalil
   vonkajší shell; zo skriptu je kód správne 1.
+
+---
+
+## 2026-11-14 – Zobrazenie EKG, rekonštrukcie a výsledkov (issue #20)
+
+**Rozhodnutie (Matúš): obrázok aj web aplikácia.** `ekg-show` uloží prehľad do PNG (do práce
+a prezentácie), `streamlit_app.py` je interaktívne demo na maturitu – výber záznamu PTB-XL alebo
+nahratie vlastného WFDB / `.npy`. Obe používajú tú istú funkciu `plot_report` a hodnoty berú priamo
+z výstupu pipeline (#19).
+
+**Čo sa zobrazuje:** 12 pomenovaných zvodov (os 0–10 s, mV), signál po filtrovaní a rekonštrukcia
+autoencodera (prevedená späť do mV), chyba po zvodoch, anomaly score s prahom, 5 pravdepodobností
+s prahmi, súlad modelov, kvalita a upozornenie, že nejde o diagnózu.
+
+**Problémy a omyly počas práce:**
+- **pyarrow vs. NumPy 1.x:** po pridaní Streamlitu aplikácia spadla pri `st.dataframe` – pyarrow 26
+  vyžaduje NumPy 2, projekt má NumPy 1.26 (kvôli Intel Macu je v lock súbore jedna verzia pre všetky
+  platformy). Overil som, že pyarrow 25 s NumPy 1.26 funguje → `pyarrow<26`. NumPy 2 na Linuxe som
+  zamietol, aby sa nezmenilo prostredie natrénovaných modelov. Chybu odhalil až beh skutočnej aplikácie
+  (agent API Streamlitu), nie import.
+- Prvá verzia obrázka: popisy pravdepodobností boli orezané na pravom okraji, text anomaly score
+  prekrýval prah a oranžová rekonštrukcia zakrývala signál → upravené rozloženie, signál čierny,
+  rekonštrukcia priesvitná.
+- V tmavej téme bol obrázok z matplotlibu biely blok → svetlá téma v `.streamlit/config.toml`.
+
+**Overenie:** 21 testov vrátane testu celej aplikácie (`AppTest`) – hodnoty v aplikácii sa zhodujú
+s pipeline; aplikácia spustená a preklikaná (záznamy 10, 127, zamknutý 9, nahrávanie). Dokumentácia
+`docs/zobrazenie.md`.

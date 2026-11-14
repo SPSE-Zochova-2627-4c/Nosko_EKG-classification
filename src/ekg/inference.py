@@ -196,6 +196,27 @@ class Pipeline:
         record_err = aggregate(lead_err, self.aggregation)
         return record_err.numpy(), lead_err.numpy(), torch.cat(probs).numpy()
 
+    @torch.no_grad()
+    def reconstruct(self, signal: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Signál po filtrovaní a jeho rekonštrukcia autoencoderom, oboje (12, 1000) v mV (#20).
+
+        Autoencoder pracuje s normalizovaným signálom; na zobrazenie sa normalizácia vráti
+        späť (x · std + mean), takže originál aj rekonštrukcia sú v mV. Chyba sa počíta
+        v normalizovanom priestore – presne ako anomaly score.
+        """
+        x = contract.validate_signal(signal)
+        xn = torch.from_numpy(self.preprocessor.transform(x[None]))
+        threads = torch.get_num_threads()
+        if self.device.type == "cpu":
+            torch.set_num_threads(1)
+        try:
+            recon = self.autoencoder(xn.to(self.device)).cpu().numpy()[0]
+        finally:
+            torch.set_num_threads(threads)
+        mean = np.asarray(self.preprocessor.mean, dtype=np.float32)[:, None]
+        std = np.asarray(self.preprocessor.std, dtype=np.float32)[:, None]
+        return xn.numpy()[0] * std + mean, recon * std + mean
+
     def predict_batch(
         self,
         signals: list[np.ndarray] | np.ndarray,

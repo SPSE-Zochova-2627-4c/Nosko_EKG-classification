@@ -5,6 +5,7 @@
     "classifier": "resnet1d-0.0.0"
   },
   "anomaly": {
+    "anomaly_score": 0.0142,
     "is_anomaly": false,
     "reconstruction_error": 0.0142,
     "threshold": 0.0215,
@@ -64,6 +65,6 @@
     "sex": "male",
     "source": "PTB-XL"
   },
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza."
 }

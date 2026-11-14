@@ -18,10 +18,11 @@ import numpy as np
 
 # --- Vstup -------------------------------------------------------------------
 
-SCHEMA_VERSION = "1.1"
-# Verzie, ktoré vie from_dict() načítať. 1.1 pridala voliteľné metadata.age_over_89 (#21);
+SCHEMA_VERSION = "1.2"
+# Verzie, ktoré vie from_dict() načítať. 1.1 pridala voliteľné metadata.age_over_89 (#21),
+# 1.2 pole anomaly.anomaly_score (#19, názov podľa maturitného zadania);
 # staršie výstupy sa pri načítaní povýšia na aktuálnu verziu.
-SUPPORTED_SCHEMA_VERSIONS = ("1.0", "1.1")
+SUPPORTED_SCHEMA_VERSIONS = ("1.0", "1.1", "1.2")
 
 # Poradie zvodov presne podľa PTB-XL (atribút sig_name vo WFDB záznamoch).
 LEADS: tuple[str, ...] = (
@@ -126,6 +127,7 @@ def to_batch(signals: list[np.ndarray] | np.ndarray) -> np.ndarray:
 class AnomalyResult:
     """Výstup Modelu A (autoencoder)."""
 
+    anomaly_score: float  # skóre anomálie = rekonštrukčná chyba (od schémy 1.2, #19)
     is_anomaly: bool
     reconstruction_error: float  # jedno skóre na záznam (definícia v #12)
     threshold: float  # kalibrovaný na validation (#13)
@@ -186,6 +188,11 @@ class PredictionResult:
             raise ValueError(f"Labely musia byť {LABELS} v tomto poradí, sú {tuple(self.labels)}.")
         if tuple(self.anomaly.error_per_lead) != LEADS:
             raise ValueError(f"error_per_lead musí mať kľúče {LEADS} v tomto poradí.")
+        if self.anomaly.anomaly_score != self.anomaly.reconstruction_error:
+            raise ValueError(
+                "anomaly_score musí byť rovné reconstruction_error "
+                f"({self.anomaly.anomaly_score} ≠ {self.anomaly.reconstruction_error})."
+            )
         for name, label in self.labels.items():
             if not 0.0 <= label.probability <= 1.0 or math.isnan(label.probability):
                 raise ValueError(f"Pravdepodobnosť {name} = {label.probability} nie je v [0, 1].")
@@ -207,7 +214,7 @@ class PredictionResult:
         return cls(
             record_id=data["record_id"],
             model_versions=dict(data["model_versions"]),
-            anomaly=AnomalyResult(**data["anomaly"]),
+            anomaly=_anomaly_from_dict(data["anomaly"]),
             labels={name: LabelResult(**value) for name, value in data["labels"].items()},
             consistency=Consistency(**data["consistency"]),
             quality=Quality(**data["quality"]),
@@ -215,6 +222,13 @@ class PredictionResult:
             schema_version=SCHEMA_VERSION,  # staršia verzia sa povýši
             disclaimer=data["disclaimer"],
         )
+
+
+def _anomaly_from_dict(data: dict) -> AnomalyResult:
+    """Pred schémou 1.2 pole anomaly_score neexistovalo – je to tá istá rekonštrukčná chyba."""
+    data = dict(data)
+    data.setdefault("anomaly_score", data["reconstruction_error"])
+    return AnomalyResult(**data)
 
 
 def sex_from_ptbxl(value: float | int | None) -> Sex | None:

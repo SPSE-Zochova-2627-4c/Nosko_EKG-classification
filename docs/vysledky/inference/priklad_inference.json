@@ -1,0 +1,295 @@
+{
+  "schema_version": "1.2",
+  "created_at": "2026-11-14T00:15:58+00:00",
+  "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza.",
+  "results": [
+    {
+      "record_id": "10",
+      "model_versions": {
+        "autoencoder": "ae_v1 (epocha 95, sha256 b9214cde491f)",
+        "classifier": "clf_v1 (epocha 20, sha256 20d915b776a3)"
+      },
+      "anomaly": {
+        "anomaly_score": 0.008562389761209488,
+        "is_anomaly": false,
+        "reconstruction_error": 0.008562389761209488,
+        "threshold": 0.038366515189409256,
+        "error_per_lead": {
+          "I": 0.007013778667896986,
+          "II": 0.005323367193341255,
+          "III": 0.006540077272802591,
+          "AVR": 0.006190660875290632,
+          "AVL": 0.00704580545425415,
+          "AVF": 0.005234898068010807,
+          "V1": 0.016585592180490494,
+          "V2": 0.013563203625380993,
+          "V3": 0.010237857699394226,
+          "V4": 0.006523283664137125,
+          "V5": 0.007432973477989435,
+          "V6": 0.011057185009121895
+        }
+      },
+      "labels": {
+        "MI": {
+          "probability": 0.00126231973990798,
+          "threshold": 0.746414065361023,
+          "positive": false
+        },
+        "STTC": {
+          "probability": 0.001597735215909779,
+          "threshold": 0.723987340927124,
+          "positive": false
+        },
+        "CD": {
+          "probability": 0.03428094461560249,
+          "threshold": 0.7924913167953491,
+          "positive": false
+        },
+        "HYP": {
+          "probability": 0.0010273350635543466,
+          "threshold": 0.6057739853858948,
+          "positive": false
+        },
+        "AFIB": {
+          "probability": 0.00027855925145559013,
+          "threshold": 0.9808287620544434,
+          "positive": false
+        }
+      },
+      "consistency": {
+        "models_agree": true,
+        "note": null
+      },
+      "quality": {
+        "status": "ok",
+        "issues": []
+      },
+      "metadata": {
+        "age": 22,
+        "age_over_89": false,
+        "sex": "female",
+        "source": "PTB-XL"
+      },
+      "schema_version": "1.2",
+      "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza."
+    },
+    {
+      "record_id": "17",
+      "model_versions": {
+        "autoencoder": "ae_v1 (epocha 95, sha256 b9214cde491f)",
+        "classifier": "clf_v1 (epocha 20, sha256 20d915b776a3)"
+      },
+      "anomaly": {
+        "anomaly_score": 0.24915988743305206,
+        "is_anomaly": true,
+        "reconstruction_error": 0.24915988743305206,
+        "threshold": 0.038366515189409256,
+        "error_per_lead": {
+          "I": 0.1356232762336731,
+          "II": 0.334568589925766,
+          "III": 0.36351507902145386,
+          "AVR": 0.19810740649700165,
+          "AVL": 0.22255197167396545,
+          "AVF": 0.4141785800457001,
+          "V1": 0.3079465925693512,
+          "V2": 0.2517646551132202,
+          "V3": 0.21234023571014404,
+          "V4": 0.26463401317596436,
+          "V5": 0.14116069674491882,
+          "V6": 0.14352762699127197
+        }
+      },
+      "labels": {
+        "MI": {
+          "probability": 0.7524118423461914,
+          "threshold": 0.746414065361023,
+          "positive": true
+        },
+        "STTC": {
+          "probability": 0.6497747898101807,
+          "threshold": 0.723987340927124,
+          "positive": false
+        },
+        "CD": {
+          "probability": 0.657829761505127,
+          "threshold": 0.7924913167953491,
+          "positive": false
+        },
+        "HYP": {
+          "probability": 0.024591639637947083,
+          "threshold": 0.6057739853858948,
+          "positive": false
+        },
+        "AFIB": {
+          "probability": 0.9982376098632812,
+          "threshold": 0.9808287620544434,
+          "positive": true
+        }
+      },
+      "consistency": {
+        "models_agree": true,
+        "note": null
+      },
+      "quality": {
+        "status": "warning",
+        "issues": [
+          "statický šum (všetky zvody)"
+        ]
+      },
+      "metadata": {
+        "age": 56,
+        "age_over_89": false,
+        "sex": "male",
+        "source": "PTB-XL"
+      },
+      "schema_version": "1.2",
+      "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza."
+    },
+    {
+      "record_id": "127",
+      "model_versions": {
+        "autoencoder": "ae_v1 (epocha 95, sha256 b9214cde491f)",
+        "classifier": "clf_v1 (epocha 20, sha256 20d915b776a3)"
+      },
+      "anomaly": {
+        "anomaly_score": 0.0222683846950531,
+        "is_anomaly": false,
+        "reconstruction_error": 0.0222683846950531,
+        "threshold": 0.038366515189409256,
+        "error_per_lead": {
+          "I": 0.01069369912147522,
+          "II": 0.006946234963834286,
+          "III": 0.013261674903333187,
+          "AVR": 0.007839662954211235,
+          "AVL": 0.014275223016738892,
+          "AVF": 0.009394163265824318,
+          "V1": 0.02306440658867359,
+          "V2": 0.041680026799440384,
+          "V3": 0.05570892244577408,
+          "V4": 0.030012063682079315,
+          "V5": 0.04128281772136688,
+          "V6": 0.013061713427305222
+        }
+      },
+      "labels": {
+        "MI": {
+          "probability": 0.011970213614404202,
+          "threshold": 0.746414065361023,
+          "positive": false
+        },
+        "STTC": {
+          "probability": 0.9080187678337097,
+          "threshold": 0.723987340927124,
+          "positive": true
+        },
+        "CD": {
+          "probability": 0.006719044875353575,
+          "threshold": 0.7924913167953491,
+          "positive": false
+        },
+        "HYP": {
+          "probability": 0.012151925824582577,
+          "threshold": 0.6057739853858948,
+          "positive": false
+        },
+        "AFIB": {
+          "probability": 0.011523976922035217,
+          "threshold": 0.9808287620544434,
+          "positive": false
+        }
+      },
+      "consistency": {
+        "models_agree": false,
+        "note": "Model A nehlási anomáliu, ale Model B označil STTC (P = 0.91) – záznam odporúčame skontrolovať."
+      },
+      "quality": {
+        "status": "warning",
+        "issues": [
+          "statický šum (I-AVR)",
+          "drift základnej línie (II-AVF,V5)"
+        ]
+      },
+      "metadata": {
+        "age": 22,
+        "age_over_89": false,
+        "sex": "female",
+        "source": "PTB-XL"
+      },
+      "schema_version": "1.2",
+      "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza."
+    },
+    {
+      "record_id": "352",
+      "model_versions": {
+        "autoencoder": "ae_v1 (epocha 95, sha256 b9214cde491f)",
+        "classifier": "clf_v1 (epocha 20, sha256 20d915b776a3)"
+      },
+      "anomaly": {
+        "anomaly_score": 0.07768072932958603,
+        "is_anomaly": true,
+        "reconstruction_error": 0.07768072932958603,
+        "threshold": 0.038366515189409256,
+        "error_per_lead": {
+          "I": 0.039818428456783295,
+          "II": 0.03460279479622841,
+          "III": 0.02618519589304924,
+          "AVR": 0.04112116992473602,
+          "AVL": 0.03206860274076462,
+          "AVF": 0.02726515755057335,
+          "V1": 0.3353533446788788,
+          "V2": 0.18503424525260925,
+          "V3": 0.14907856285572052,
+          "V4": 0.02199520543217659,
+          "V5": 0.015435763634741306,
+          "V6": 0.024210229516029358
+        }
+      },
+      "labels": {
+        "MI": {
+          "probability": 0.1050698384642601,
+          "threshold": 0.746414065361023,
+          "positive": false
+        },
+        "STTC": {
+          "probability": 0.03432666137814522,
+          "threshold": 0.723987340927124,
+          "positive": false
+        },
+        "CD": {
+          "probability": 0.44670361280441284,
+          "threshold": 0.7924913167953491,
+          "positive": false
+        },
+        "HYP": {
+          "probability": 0.02142665535211563,
+          "threshold": 0.6057739853858948,
+          "positive": false
+        },
+        "AFIB": {
+          "probability": 0.00035750906681641936,
+          "threshold": 0.9808287620544434,
+          "positive": false
+        }
+      },
+      "consistency": {
+        "models_agree": false,
+        "note": "Model A hlási anomáliu, ale Model B neoznačil žiadnu z porúch MI, STTC, CD, HYP, AFIB – môže ísť o inú poruchu, šum alebo falošný poplach."
+      },
+      "quality": {
+        "status": "warning",
+        "issues": [
+          "statický šum (všetky zvody)",
+          "drift základnej línie (III,V1)"
+        ]
+      },
+      "metadata": {
+        "age": 43,
+        "age_over_89": false,
+        "sex": "female",
+        "source": "PTB-XL"
+      },
+      "schema_version": "1.2",
+      "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza."
+    }
+  ]
+}

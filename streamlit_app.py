@@ -1,9 +1,10 @@
-"""Web aplikácia: EKG, rekonštrukcia a výsledky oboch modelov (issue #20).
+"""Web aplikácia: EKG, rekonštrukcia a výsledky oboch modelov (issue #20), mapy dôležitosti (#27).
 
 Spustenie:  uv run streamlit run streamlit_app.py
 Potrebuje checkpointy ae_v1 a clf_v1 (GitHub Release). Ukážkové záznamy v examples/ fungujú
 bez datasetu; ľubovoľný záznam PTB-XL potrebuje stiahnutý dataset (uv run ekg-download).
-Všetka logika je v balíku ekg (inference, visualization, app_support) – tu sa iba zobrazuje.
+Všetka logika je v balíku ekg (inference, visualization, app_support, explain) – tu sa iba
+zobrazuje.
 """
 
 import csv
@@ -13,7 +14,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from ekg import app_support, contract, export, inference
+from ekg import app_support, contract, explain, export, inference
 from ekg.visualization import plot_report, verdict
 
 st.set_page_config(
@@ -58,7 +59,12 @@ def analyze_upload(files: list[tuple[str, bytes]]):
 def analyze(signal, rid, meta, ann):
     pipe = load_pipeline()
     filtered, recon = pipe.reconstruct(signal)
-    return pipe.predict(signal, rid, meta, ann), filtered, recon
+    return pipe.predict(signal, rid, meta, ann), filtered, recon, signal
+
+
+@st.cache_data(max_entries=16, show_spinner="Počítam mapy dôležitosti (~3 s)…")
+def explain_record(rid: str, signal) -> explain.Explanation:
+    return explain.explain(load_pipeline(), signal, rid)
 
 
 try:
@@ -124,7 +130,7 @@ except (OSError, KeyError) as exc:
     )
     st.stop()
 
-result, filtered, recon = analysis
+result, filtered, recon, raw_signal = analysis
 a = result.anomaly
 
 # --- výsledky -----------------------------------------------------------------------
@@ -210,6 +216,43 @@ with st.container(horizontal=True):
         icon=":material/download:",
         on_click="ignore",
     )
+
+# --- mapy dôležitosti (#27) ------------------------------------------------------------
+
+st.subheader("Na čo sa modely pozerajú")
+st.caption(
+    "Farebné pozadie ukazuje, ktoré časti záznamu ovplyvnili výstup modelu. Pri Modeli B je to "
+    "Integrated Gradients po zvodoch (pás hore: Grad-CAM v čase), pri Modeli A rekonštrukčná "
+    "chyba v čase. Nie je to lekárske vysvetlenie a nehovorí, či je výsledok správny."
+)
+targets = [explain.MODEL_A, *contract.LABELS]
+target = st.segmented_control(
+    "Mapa pre",
+    targets,
+    default=explain.default_target(result),
+    required=True,
+    key="explain_target",
+    format_func=lambda t: (
+        t if t == explain.MODEL_A else f"{t} ({result.labels[t].probability:.2f})"
+    ),
+)
+expl = explain_record(result.record_id, raw_signal)
+if target != explain.MODEL_A:
+    top = explain.top_leads(expl.attributions[target])
+    st.markdown(f"Najväčší podiel kladnej atribúcie: **{top}** (rovnomerne by mal každý zvod 8 %).")
+fig_expl = explain.plot_explanation(expl, target)
+st.pyplot(fig_expl, alt=f"12 zvodov EKG s mapou dôležitosti pre {target}")
+png_expl = io.BytesIO()
+fig_expl.savefig(png_expl, format="png", dpi=100)
+plt.close(fig_expl)
+st.download_button(
+    "Mapa PNG",
+    png_expl.getvalue(),
+    file_name=f"ekg_{result.record_id}_mapa_{target.replace(' ', '_')}.png",
+    mime="image/png",
+    icon=":material/download:",
+    on_click="ignore",
+)
 
 st.caption(
     f"Modely: {result.model_versions['autoencoder']} · {result.model_versions['classifier']}"

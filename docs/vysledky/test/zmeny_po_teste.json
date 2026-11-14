@@ -40,6 +40,16 @@
       "reason": "nový súbor: opisná analýza výsledkov podľa veku, pohlavia a kvality signálu (ekg-subgroups, docs/podskupiny.md)",
       "affects_results": false,
       "verification": "test množinu iba číta (uložené predikcie z #22 + labely), model na nej nespúšťa; riadok 'všetky' na teste sa presne zhoduje s report.json (tests/test_subgroups.py::test_all_records_row_reproduces_final_test_report); modely, prahy a dáta overené proti zmrazeniu pred behom"
+    },
+    {
+      "file": "src/ekg/explain.py",
+      "sha256_before": null,
+      "sha256_now": "dc6d319b4e66b465cb2602890bff2ea6fc4921f10b6a28eb776a316020d6b05a",
+      "date": "2026-11-14",
+      "issue": "#27",
+      "reason": "nový súbor: mapy dôležitosti (Integrated Gradients, Grad-CAM) a rekonštrukčná chyba v čase, CLI ekg-explain, sekcia vo web aplikácii (docs/vysvetlenie.md)",
+      "affects_results": false,
+      "verification": "iba číta zmrazené modely z Pipeline, predict/predict_batch sa nemenia; tests/test_explain.py::test_explain_matches_pipeline_output (anomaly score a pravdepodobnosti zhodné s Pipeline.predict); test množinu CLI odmieta (test_cli_refuses_test_set)"
     }
   ]
 }

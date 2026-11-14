@@ -631,3 +631,33 @@ Rozdiel medzi ženami a mužmi z #22 sa nepotvrdil (na validation nie je, interv
   a MI 7 – preto porovnávam micro F1 a macro označujem ako malú skupinu.
 - Súbory upravené cez Python vo Windows dostali konce riadkov CRLF (diff celého README). Previedol
   som ich späť na LF.
+
+---
+
+## 2026-11-14 – Na čo sa modely pozerajú (issue #27)
+
+**Čo pribudlo:** `src/ekg/explain.py` (Integrated Gradients a Grad-CAM pre každý label Modelu B,
+rekonštrukčná chyba v čase pre Model A), `ekg-explain`, sekcia „Na čo sa modely pozerajú“ vo web
+aplikácii, kontrola máp na validation a 10 skontrolovaných príkladov v [vysvetlenie.md](vysvetlenie.md).
+
+**Rozhodnutia:**
+- Dve metódy pre Model B: Grad-CAM je overiteľne závislý od modelu, ale má iba časové rozlíšenie
+  ~160 ms a nerozlišuje zvody; IG dávajú mapu po zvodoch. Obe sú v jednom obrázku.
+- Mapy iba vysvetľujú, výstupy nemenia – inferencia ani obrázok z #20 sa neupravovali, všetko je
+  v novom súbore (zapísaný v `zmeny_po_teste.json`).
+- Príklady a kontrola iba na validation; CLI aj aplikácia test množinu odmietajú.
+
+**Zistenia:** podiely zvodov sedia pri blokádach ramienok, ASMI a LVH, nesedia pri IMI (dolné zvody
+24 % = rovnomerne), pri ischémii sú na QRS namiesto ST/T a pri falošnom MI na zdravom EKG ukazujú
+miesto bez klinického významu. Mapy IG majú s náhodným modelom koreláciu 0,68 – z veľkej časti
+odrážajú samotný signál; Grad-CAM −0,03.
+
+**Omyly a úpravy počas práce:**
+- IG so 64 krokmi: kontrola úplnosti ukázala odchýlku až 11 % (pri 128 krokoch dokonca 26 %).
+  Zvýšil som na 256 krokov (do 4 %, medián 0,4 %).
+- Farebná škála v prvom obrázku prekrývala hrudné zvody; dal som ju do samostatnej osi.
+- V aplikácii som najprv pri zázname bez poruchy ukazoval mapu labelu s P ≈ 0,03 – taká mapa nič
+  nevysvetľuje, predvolene sa teraz ukáže Model A.
+- Pri generovaní príkladov sa „Model A“ v skripte rozdelilo na dve slová (chýbajúce úvodzovky).
+- Kontrolu na náhodnom modeli som pridal až po prvých obrázkoch: mapy „pekne“ zvýrazňovali QRS
+  a chcel som vedieť, či to nie je vlastnosť metódy. Čiastočne je.

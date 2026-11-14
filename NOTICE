@@ -1,0 +1,12 @@
+Detekcia anomálií a klasifikácia EKG
+Copyright 2026 Matúš Nosko
+
+Kód je licencovaný pod Apache License, Version 2.0 (súbor LICENSE).
+
+Tento repozitár obsahuje 4 ukážkové záznamy (priečinok examples/) z datasetu PTB-XL v1.0.3:
+Wagner, P., Strodthoff, N., Bousseljot, R., Samek, W., & Schaeffter, T. (2022). PTB-XL, a large
+publicly available electrocardiography dataset (version 1.0.3). PhysioNet.
+https://doi.org/10.13026/kfzx-aw45 – licencia Creative Commons Attribution 4.0 (CC BY 4.0),
+https://creativecommons.org/licenses/by/4.0/. Záznamy sú skopírované bez zmeny.
+
+Natrénované modely (GitHub Releases model-ae_v1, model-clf_v1) vznikli tréningom na PTB-XL.

@@ -567,3 +567,32 @@ s pipeline; aplikácia spustená a preklikaná (záznamy 10, 127, zamknutý 9, n
   dát nenačítava žiadny model.
 - Pred zmrazením som chcel istotu, že vyhodnotenie nespadne až na teste (oprava kódu po behu by
   znamenala nové zmrazenie) – preto skúška nanečisto na validation.
+
+---
+
+## 2026-11-14 – Dokumentácia a spustiteľné demo (issue #23)
+
+**Čo pribudlo:** nové README (výsledky z testu, rýchly štart, ako systém funguje s odkazmi na všetky
+dokumenty, reprodukcia, obmedzenia, licencie), `docs/demo.md` (scenár s očakávanými výstupmi),
+4 ukážkové záznamy v `examples/` a zdroj „Ukážka“ vo web aplikácii, `LICENSE` + `NOTICE`.
+
+**Rozhodnutia:**
+- **Licencia kódu: Apache 2.0** (rozhodol Matúš). Text som skopíroval z balíka, ktorý je už v prostredí
+  (rovnaký štandardný text vo viacerých balíkoch), nie z internetu.
+- **Demo bez datasetu:** 4 pôvodné záznamy PTB-XL z validation (CC BY 4.0 dovoľuje šírenie s uvedením
+  zdroja; SHA256 overené voči oficiálnemu `SHA256SUMS.txt`). Nový používateľ potrebuje iba kód
+  a modely (~10 MB) z Releasov – repozitár je verejný, stačí `curl`.
+- Pri #23 som zámerne nemenil kód v `src/ekg` ani `uv.lock`, aby zmrazenie z #22 ostalo platné.
+
+**Overenie ako nový používateľ:** čerstvý `git clone` do prázdneho priečinka, `uv sync`, `ekg-check`,
+stiahnutie modelov cez `curl`, `ekg-final-eval --check`, demo príkazy, testy – bez datasetu.
+
+**Nájdená chyba a jej riešenie:** v čerstvom klone `ekg-predict examples/00127_lr` padol („Nenašiel som
+ptbxl_database.csv“) – `ptbxl_records` načítaval databázu aj pri prázdnom zozname `--ecg-id`. Na mojom
+PC s datasetom sa to nedalo všimnúť. Oprava je v zmrazenom kóde, preto som pridal **evidenciu zmien
+po teste** (`zmeny_po_teste.json`): povolené iba zapísané zmeny kódu v `src/`, nikdy modely, prahy ani
+dáta; `--check` ich vypíše. Overené, že výstupy pre ukážkové záznamy sú zhodné s #19.
+Rozhodnutie opraviť a zdokumentovať (namiesto obchádzania cez `ekg-show`) urobil Matúš.
+
+**Omyly:** do demo návodu som najprv napísal, že Streamlit pri prvom spustení pýta e-mail – neoveril som
+to, tak som to odstránil.

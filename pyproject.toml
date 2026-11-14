@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Detekcia anomálií a multi-label klasifikácia 12-zvodového EKG (PTB-XL) – maturitný projekt"
 readme = "README.md"
 authors = [{ name = "Matúš Nosko" }]
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.11,<3.13"
 dependencies = [
     # PyTorch už pre Intel Macy (x86_64) nevydáva verzie novšie ako 2.2.2.

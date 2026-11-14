@@ -122,15 +122,39 @@ def make_freeze() -> dict:
     }
 
 
-def check_freeze(freeze: dict) -> list[str]:
-    """Zoznam rozdielov oproti zmrazeniu (prázdny = všetko sedí)."""
+def post_test_changes() -> list[dict]:
+    """Zdokumentované zmeny kódu PO teste (zmeny_po_teste.json); prázdne, ak súbor nie je."""
+    path = results_dir() / "zmeny_po_teste.json"
+    if not path.exists():
+        return []
+    return json.loads(path.read_text("utf-8"))["changes"]
+
+
+def accepted_change(rel: str, frozen: str, now: str, changes: list[dict]) -> dict | None:
+    """Zmena súboru je povolená, iba ak ide o kód v src/ a je zdokumentovaná presne
+    (pôvodný SHA256 = zmrazený, nový SHA256 = súčasný). Modely, prahy, dáta a uv.lock nikdy."""
+    if not rel.startswith("src/"):
+        return None
+    for change in changes:
+        if (change["file"], change["sha256_frozen"], change["sha256_now"]) == (rel, frozen, now):
+            return change
+    return None
+
+
+def check_freeze(freeze: dict, changes: list[dict] | None = None) -> list[str]:
+    """Zoznam rozdielov oproti zmrazeniu (prázdny = všetko sedí).
+
+    changes = zdokumentované zmeny kódu po teste (post_test_changes); iné zmeny sú chyba.
+    """
     problems = []
     current = frozen_files()
     for rel, digest in freeze["sha256"].items():
         path = current.get(rel)
         if path is None or not path.exists():
             problems.append(f"chýba {rel}")
-        elif _sha256(path) != digest:
+        elif (now := _sha256(path)) != digest and not accepted_change(
+            rel, digest, now, changes or []
+        ):
             problems.append(f"zmenený {rel}")
     for rel in sorted(set(current) - set(freeze["sha256"])):
         problems.append(f"nový súbor {rel}")
@@ -451,9 +475,17 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.check:
         freeze = json.loads((results_dir() / "zmrazenie.json").read_text("utf-8"))
-        problems = check_freeze(freeze)
-        print("Zmrazenie sedí." if not problems else "\n".join(problems))
-        return 0 if not problems else 1
+        changes = post_test_changes()
+        problems = check_freeze(freeze, changes)
+        if problems:
+            print("\n".join(problems))
+            return 1
+        print("Zmrazenie sedí.")
+        current = frozen_files()
+        for c in changes:
+            if _sha256(current[c["file"]]) != freeze["sha256"][c["file"]]:
+                print(f"  zmena kódu po teste ({c['issue']}): {c['file']} – {c['reason']}")
+        return 0
     return run(force=args.force)
 
 

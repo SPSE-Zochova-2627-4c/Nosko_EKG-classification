@@ -133,6 +133,27 @@ Potvrdzujú sa zistenia z validation (#18):
    výborne, HYP (precision 0,52) a nešpecifické poruchy vedenia slabo, autoencoder prehliada približne
    40 % patológií.
 
+## Zmeny po teste
+
+Pri príprave dema (#23) sa ukázala chyba: `ekg-predict` so súborom (napr. `examples/00127_lr`) bez
+stiahnutého datasetu padal, lebo načítaval databázu PTB-XL aj vtedy, keď žiadny záznam z nej nebol zadaný.
+Oprava je jedna podmienka v `src/ekg/inference.py` – teda zmena zmrazeného kódu.
+
+Aby zmrazenie ostalo dôveryhodné, zmeny po teste sa **evidujú** v
+[`zmeny_po_teste.json`](vysledky/test/zmeny_po_teste.json) (pôvodný a nový SHA256, dôvod, overenie):
+
+- povolené sú **iba zmeny kódu v `src/`**, ktoré sú zapísané presne (pôvodný SHA256 = zmrazený,
+  nový = súčasný); akákoľvek ďalšia, nezapísaná zmena je pri `--check` chyba,
+- **modely, prahy, dáta, manifesty a `uv.lock` sa po teste meniť nesmú vôbec** – ani so záznamom,
+- `uv run ekg-final-eval --check` vypíše „Zmrazenie sedí.“ a pod tým každú zapísanú zmenu.
+
+| súbor | zmena | vplyv na výsledky |
+|---|---|---|
+| `src/ekg/inference.py` | `ptbxl_records([])` nenačíta databázu (2 riadky) | žiadny – výstupy pre záznamy 10, 17, 127, 352 sú zhodné s #19 |
+| `src/ekg/evaluation/final_evaluation.py` | `--check` prijme zapísané zmeny kódu | žiadny – výpočet metrík sa nezmenil |
+
+Výsledky tohto dokumentu pochádzajú z behu so zmrazeným kódom (commit `a96600e`).
+
 ## Uložené výstupy (`docs/vysledky/test/`)
 
 | súbor | obsah |

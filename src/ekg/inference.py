@@ -302,6 +302,8 @@ def ptbxl_id(path: str | Path) -> int | None:
 
 def ptbxl_records(ecg_ids: list[int]):
     """Signál, metadáta a anotácie kvality záznamov PTB-XL; test množina je zamknutá (#22)."""
+    if not ecg_ids:  # iba vlastné súbory – dataset netreba (oprava po teste, #23)
+        return
     from ekg import export
     from ekg.data import ptbxl, splits
 

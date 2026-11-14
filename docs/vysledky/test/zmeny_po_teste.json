@@ -1,0 +1,25 @@
+{
+  "description": "Zmeny kódu po záverečnom teste (#22). Povolené iba pre kód v src/ a iba zdokumentované; modely, prahy, dáta, manifesty a uv.lock sa po teste nemenia. ekg-final-eval --check ich vypíše.",
+  "changes": [
+    {
+      "file": "src/ekg/inference.py",
+      "sha256_frozen": "46df600b81ff4a59ae307965e0614e227de3920cbba0df6b90c1519d8d72a80b",
+      "sha256_now": "cf1675647db9a978b7ed4594e41e8a9427c10db56ab96073ccd0f0bc7d895fbd",
+      "date": "2026-11-14",
+      "issue": "#23",
+      "reason": "ekg-predict so súborom (napr. examples/) bez datasetu padal – načítaval databázu PTB-XL aj pri prázdnom --ecg-id; pridaná podmienka na začiatok ptbxl_records",
+      "affects_results": false,
+      "verification": "zmena sa týka iba načítania záznamov v CLI pred výpočtom; výstupy --ecg-id 10, 17, 127, 352 sú úplne zhodné s docs/vysledky/inference/priklad_inference.json (#19), predict_batch a modely sa nezmenili; test tests/test_inference.py::test_files_only_do_not_need_dataset"
+    },
+    {
+      "file": "src/ekg/evaluation/final_evaluation.py",
+      "sha256_frozen": "746986d620ea697336a40ba504ed0f501cde2912866b2b3a6096684cf0d1a648",
+      "sha256_now": "b8d9afec90d950d45236ad4e887b65d6755cac30f4ff3bab90e35237a49a08e9",
+      "date": "2026-11-14",
+      "issue": "#23",
+      "reason": "kontrola zmrazenia (--check) prijme zdokumentované zmeny kódu po teste (tento súbor); vyhodnocovací výpočet sa nezmenil",
+      "affects_results": false,
+      "verification": "zmenené iba funkcie check_freeze, post_test_changes, accepted_change a výpis --check; funkcie výpočtu metrík sú rovnaké; testy v tests/test_final_evaluation.py (zdokumentovaná zmena kódu prijatá, zmena modelov/prahov/dát nikdy, nezdokumentovaná zmena odmietnutá)"
+    }
+  ]
+}

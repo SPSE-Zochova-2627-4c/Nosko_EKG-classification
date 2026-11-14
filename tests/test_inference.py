@@ -211,3 +211,15 @@ def test_real_models_use_saved_thresholds():
         clf["labels"][n]["threshold"] for n in contract.LABELS
     ]
     assert clf["checkpoint_sha256"][:12] in pipe.model_versions["classifier"]
+
+
+def test_files_only_do_not_need_dataset(monkeypatch):
+    """Oprava po teste (#23): bez --ecg-id sa databáza PTB-XL nenačíta."""
+    from ekg.data import ptbxl
+
+    def fail(*_args, **_kwargs):
+        raise AssertionError("databáza PTB-XL sa nemala načítať")
+
+    monkeypatch.setattr(ptbxl, "load_database", fail)
+    monkeypatch.setattr(splits, "load_manifest", fail)
+    assert list(inference.ptbxl_records([])) == []

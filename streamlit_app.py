@@ -1,12 +1,14 @@
 """Web aplikácia: EKG, rekonštrukcia a výsledky oboch modelov (issue #20).
 
 Spustenie:  uv run streamlit run streamlit_app.py
-Potrebuje checkpointy ae_v1 a clf_v1 (GitHub Release); záznamy PTB-XL aj dataset.
+Potrebuje checkpointy ae_v1 a clf_v1 (GitHub Release). Ukážkové záznamy v examples/ fungujú
+bez datasetu; ľubovoľný záznam PTB-XL potrebuje stiahnutý dataset (uv run ekg-download).
 Všetka logika je v balíku ekg (inference, visualization, app_support) – tu sa iba zobrazuje.
 """
 
 import csv
 import io
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -29,6 +31,16 @@ st.warning(contract.DISCLAIMER, title="Nejde o lekársku diagnózu", icon=":mate
 @st.cache_resource
 def load_pipeline() -> inference.Pipeline:
     return inference.Pipeline.load()
+
+
+EXAMPLES_DIR = Path(__file__).parent / "examples"
+
+
+@st.cache_data(max_entries=8)
+def analyze_example(ecg_id: int):
+    rid = f"{ecg_id:05d}_lr"
+    signal = inference.read_wfdb(EXAMPLES_DIR / rid)
+    return analyze(signal, rid, contract.Metadata(source=f"PTB-XL (ukážka examples/{rid})"), None)
 
 
 @st.cache_data(max_entries=32)
@@ -58,28 +70,35 @@ except inference.PipelineError as exc:
 # --- výber záznamu ----------------------------------------------------------------
 
 source = st.segmented_control(
-    "Zdroj záznamu", ["PTB-XL", "Vlastný súbor"], default="PTB-XL", required=True, key="source"
+    "Zdroj záznamu",
+    ["Ukážka", "PTB-XL", "Vlastný súbor"],
+    default="Ukážka",
+    required=True,
+    key="source",
+    help="Ukážka: 4 záznamy v priečinku examples/ (netreba dataset). "
+    "PTB-XL: ľubovoľný záznam zo stiahnutého datasetu.",
 )
 analysis = None
 try:
-    if source == "PTB-XL":
-        with st.container(horizontal=True, vertical_alignment="bottom"):
-            example = st.selectbox(
-                "Ukážkový záznam (validation)",
-                list(app_support.EXAMPLES),
-                format_func=lambda i: f"{i} – {app_support.EXAMPLES[i]}",
-                key="example",
-            )
-            ecg_id = st.number_input(
-                "alebo ecg_id záznamu PTB-XL",
-                min_value=1,
-                max_value=21837,
-                value=None,
-                step=1,
-                key="ecg_id",
-                help="Záznamy test množiny sú zamknuté pre záverečné vyhodnotenie (#22).",
-            )
-        analysis = analyze_ptbxl(int(ecg_id) if ecg_id is not None else example)
+    if source == "Ukážka":
+        example = st.selectbox(
+            "Ukážkový záznam (PTB-XL, validation)",
+            list(app_support.EXAMPLES),
+            format_func=lambda i: f"{i} – {app_support.EXAMPLES[i]}",
+            key="example",
+        )
+        analysis = analyze_example(example)
+    elif source == "PTB-XL":
+        ecg_id = st.number_input(
+            "ecg_id záznamu PTB-XL",
+            min_value=1,
+            max_value=21837,
+            value=127,
+            step=1,
+            key="ecg_id",
+            help="Záznamy test množiny sú zamknuté pre záverečné vyhodnotenie (#22).",
+        )
+        analysis = analyze_ptbxl(int(ecg_id))
     else:
         uploaded = st.file_uploader(
             "WFDB záznam (.hea + .dat) alebo NumPy pole (.npy, tvar 12 × 1000 v mV)",
@@ -98,7 +117,11 @@ except PermissionError as exc:  # TestSetLockedError
     st.error(str(exc), title="Záznam nie je dostupný", icon=":material/lock:")
     st.stop()
 except (OSError, KeyError) as exc:
-    st.error(f"Záznam sa nepodarilo načítať: {exc}", icon=":material/error:")
+    st.error(
+        f"Záznam sa nepodarilo načítať: {exc}. Ak nemáš stiahnutý dataset PTB-XL "
+        "(uv run ekg-download), použi zdroj Ukážka.",
+        icon=":material/error:",
+    )
     st.stop()
 
 result, filtered, recon = analysis

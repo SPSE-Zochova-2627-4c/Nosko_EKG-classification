@@ -258,3 +258,59 @@ def test_saved_predictions_reproduce_report():
     anomaly = np.array([by_id[i].anomaly.is_anomaly for i in ids])
     assert int((anomaly & abnormal).sum()) == ae["TP"]
     assert int((anomaly & strict & ~abnormal).sum()) == ae["FP"]
+
+
+# --- zdokumentované zmeny kódu po teste (#23) -----------------------------------------
+
+
+def _change(root, rel, freeze):
+    import hashlib
+
+    now = hashlib.sha256((root / rel).read_bytes()).hexdigest()
+    return {"file": rel, "sha256_frozen": freeze["sha256"][rel], "sha256_now": now,
+            "issue": "#23", "reason": "test", "affects_results": False}  # fmt: skip
+
+
+def test_documented_code_change_is_accepted(fake_project):
+    freeze = fe.make_freeze()
+    (fake_project / "src/ekg/a.py").write_text("oprava")
+    change = _change(fake_project, "src/ekg/a.py", freeze)
+    assert fe.check_freeze(freeze, [change]) == []
+    (fake_project / "src/ekg/a.py").write_text("ďalšia zmena")  # nová, nezdokumentovaná
+    assert fe.check_freeze(freeze, [change]) == ["zmenený src/ekg/a.py"]
+
+
+def test_models_thresholds_and_data_can_never_change(fake_project):
+    freeze = fe.make_freeze()
+    for rel in ("checkpoints/clf_v1/thresholds.json", "manifests/splits_v1.0.csv", "uv.lock"):
+        (fake_project / rel).write_text("zmena")
+        change = _change(fake_project, rel, freeze)
+        assert f"zmenený {rel}" in fe.check_freeze(freeze, [change])
+
+
+def test_check_cli_lists_documented_changes(fake_project, capsys):
+    import json
+
+    assert fe.main(["--freeze"]) == 0
+    freeze = json.loads((fe.results_dir() / "zmrazenie.json").read_text("utf-8"))
+    (fake_project / "src/ekg/a.py").write_text("oprava")
+    (fe.results_dir() / "zmeny_po_teste.json").write_text(
+        json.dumps({"changes": [_change(fake_project, "src/ekg/a.py", freeze)]})
+    )
+    assert fe.main(["--check"]) == 0
+    out = capsys.readouterr().out
+    assert "Zmrazenie sedí." in out and "zmena kódu po teste (#23): src/ekg/a.py" in out
+
+
+def test_saved_post_test_changes_do_not_touch_results():
+    import json
+
+    changes = json.loads((RESULTS / "zmeny_po_teste.json").read_text("utf-8"))["changes"]
+    assert changes
+    for c in changes:
+        assert c["file"].startswith("src/ekg/") and c["affects_results"] is False
+        assert c["reason"] and c["verification"]
+    freeze = json.loads((RESULTS / "zmrazenie.json").read_text("utf-8"))
+    problems = fe.check_freeze(freeze, changes)
+    # bez checkpointov (napr. čerstvý klon) chýbajú iba modely a prahy
+    assert all(p.startswith("chýba checkpoints/") for p in problems)

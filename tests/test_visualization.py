@@ -11,6 +11,7 @@ from ekg import app_support, contract, inference, paths, visualization
 from tests.test_inference import _signal, _write_run
 
 APP = paths.PROJECT_ROOT / "streamlit_app.py"
+EXAMPLES = paths.PROJECT_ROOT / "examples"
 HAS_MODELS = all(
     (paths.CHECKPOINT_DIR / run / name).exists()
     for run, name in (("ae_v1", "threshold.json"), ("clf_v1", "thresholds.json"))
@@ -178,7 +179,7 @@ def test_examples_are_not_in_test_set():
 @pytest.mark.skipif(not HAS_MODELS, reason="checkpointy ae_v1 / clf_v1 nie sú k dispozícii")
 def test_cli_writes_png(tmp_path):
     out = tmp_path / "r.png"
-    assert visualization.main(["--ecg-id", "10", "-o", str(out)]) == 0
+    assert visualization.main([str(EXAMPLES / "00010_lr"), "-o", str(out)]) == 0  # bez datasetu
     assert out.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
     assert visualization.main(["--ecg-id", "9", "-o", str(out)]) == 1  # test množina
 
@@ -187,25 +188,56 @@ def test_cli_writes_png(tmp_path):
 def test_app_matches_pipeline():
     from streamlit.testing.v1 import AppTest
 
+    # predvolene ukážkový záznam z examples/ – funguje aj bez datasetu
     at = AppTest.from_file(str(APP), default_timeout=60).run()
     assert not at.exception
     metrics = {m.label: m.value for m in at.metric}
-    expected = inference.Pipeline.load().predict(
-        *[(s, rid, m, a) for rid, s, m, a in inference.ptbxl_records([10])][0]
-    )
+    signal = inference.read_wfdb(EXAMPLES / "00010_lr")
+    expected = inference.Pipeline.load().predict(signal, "00010_lr")
     assert metrics["Anomaly score (Model A)"] == f"{expected.anomaly.anomaly_score:.4f}"
     assert metrics["Súlad modelov"] == "áno"
     probs = at.dataframe[0].value["Pravdepodobnosť"].tolist()
     assert probs == pytest.approx([lab.probability for lab in expected.labels.values()])
 
-    at.number_input(key="ecg_id").set_value(127).run()
+    at.selectbox(key="example").set_value(127).run()
     assert not at.exception and at.warning[-1].proto.title == "Modely nesúhlasia"
-
-    at.number_input(key="ecg_id").set_value(9).run()
-    assert at.error and "test množiny" in at.error[0].value
 
     at.segmented_control(key="source").set_value("Vlastný súbor").run()
     assert not at.exception and at.info
+
+
+@pytest.mark.skipif(
+    not HAS_MODELS or not (paths.DATA_DIR / "raw" / "ptb-xl" / "ptbxl_database.csv").exists(),
+    reason="chýbajú modely alebo dataset PTB-XL",
+)
+def test_app_ptbxl_source_and_test_lock():
+    from streamlit.testing.v1 import AppTest
+
+    at = AppTest.from_file(str(APP), default_timeout=60).run()
+    at.segmented_control(key="source").set_value("PTB-XL").run()
+    assert not at.exception and at.subheader[0].value == "Záznam 127"
+    at.number_input(key="ecg_id").set_value(9).run()
+    assert at.error and "test množiny" in at.error[0].value
+
+
+def test_example_files_are_original_validation_records():
+    """examples/ = pôvodné záznamy PTB-XL z validation (SHA256 podľa SHA256SUMS.txt)."""
+    import hashlib
+
+    from ekg.data import splits
+
+    manifest = splits.load_manifest()
+    names = sorted(p.name for p in EXAMPLES.iterdir() if p.suffix in (".hea", ".dat"))
+    assert names == sorted(
+        f"{i:05d}_lr{ext}" for i in app_support.EXAMPLES for ext in (".hea", ".dat")
+    )
+    assert all(manifest.loc[i, "split"] == "val" for i in app_support.EXAMPLES)
+    sums = paths.DATA_DIR / "raw" / "ptb-xl" / "SHA256SUMS.txt"
+    if sums.exists():
+        official = dict(line.split()[::-1] for line in sums.read_text().splitlines() if line)
+        for name in names:
+            digest = hashlib.sha256((EXAMPLES / name).read_bytes()).hexdigest()
+            assert official[f"records100/00000/{name}"] == digest, name
 
 
 def test_saved_examples_json_valid():

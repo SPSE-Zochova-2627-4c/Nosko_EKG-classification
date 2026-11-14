@@ -530,3 +530,40 @@ s prahmi, súlad modelov, kvalita a upozornenie, že nejde o diagnózu.
 **Overenie:** 21 testov vrátane testu celej aplikácie (`AppTest`) – hodnoty v aplikácii sa zhodujú
 s pipeline; aplikácia spustená a preklikaná (záznamy 10, 127, zamknutý 9, nahrávanie). Dokumentácia
 `docs/zobrazenie.md`.
+
+---
+
+## 2026-11-14 – Záverečné vyhodnotenie na test množine (issue #22)
+
+**Postup, aby sa nedalo ladiť na teste:**
+1. Napísal som `ekg-final-eval` a testy. **Skúška nanečisto na validation** (test sa nepoužil – v skripte
+   mimo repozitára som namiesto test ID podsunul validation ID) dala presne čísla z #14 a #18 (rozdiel
+   0,000) → kód počíta to isté ako predchádzajúce vyhodnotenia.
+2. **Zmrazenie** (`zmrazenie.json`, 44 súborov: checkpointy, prahy, preprocessing, manifest, mapovanie
+   labelov, `uv.lock`, celý `src/ekg`) a **commit `a96600e` pred spustením**.
+3. **Jediný beh** na celej test množine (2 198 záznamov, 1 904 pacientov, prekrytie pacientov s train/val 0),
+   44 s. Pred behom sa overilo, že sa od zmrazenia nič nezmenilo.
+
+**Výsledky (test, 95 % bootstrap po pacientoch):**
+- Model A: AUROC **0,796** (0,771 – 0,820), senzitivita 0,586, špecificita 0,858 (validation 0,832 / 0,612 / 0,910).
+- Model B: macro AUROC **0,929** (0,922 – 0,936), macro F1 **0,745** (0,728 – 0,762), micro F1 0,735
+  (validation 0,938 / 0,758 / 0,746). AFIB F1 0,870, HYP F1 0,606.
+- Súlad modelov: nesúlad pri 30 % záznamov (validation 29 %).
+
+**Zhodnotenie:**
+- Klasifikátor zovšeobecňuje – macro F1 0,745 sedí s odhadom krížovej validácie z #17 (0,748), prahy
+  z validation fungujú.
+- Autoencoder je na teste slabší: AUROC pod intervalom z validation, falošné poplachy na prísnom NORM
+  41 → 66. Validation bola pri ňom optimistická (výber epochy aj prahu). **Nič som neupravoval** – zmena
+  prahu podľa testu by bola ladenie na test dátach.
+- Rovnaké vzory chýb ako na validation: zámeny MI ↔ STTC, neisté anotácie MI (recall 0,58 pri
+  likelihood 15 vs. 0,89 pri 100), slabé IVCD, LMI, LAO/LAE. Nové pozorovanie: ženy micro F1 0,719 vs.
+  muži 0,751 (na validation bez rozdielu) – bez intervalov iba pozorovanie, do #26.
+
+**Omyly a úpravy počas práce:**
+- Test „test množinu otvára iba záverečné vyhodnotenie“ najprv hľadal text `allow_test=True` a našiel ho
+  aj v docstringoch a v kontrole dát z #9 (`check_pipeline.py`), ktorá test množinu otvára iba na kontrolu
+  tvarov bez modelov. Prerobil som ho na rozbor kódu (AST): hľadá skutočné volania a overí, že kontrola
+  dát nenačítava žiadny model.
+- Pred zmrazením som chcel istotu, že vyhodnotenie nespadne až na teste (oprava kódu po behu by
+  znamenala nové zmrazenie) – preto skúška nanečisto na validation.

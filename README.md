@@ -114,6 +114,7 @@ uv run ekg-clf-report     # vyhodnotenie klasifikátora a analýza chýb (docs/v
 uv run ekg-predict --ecg-id 10   # oba modely na jednom zázname: anomaly score + 5 porúch (docs/inference.md)
 uv run ekg-show --ecg-id 127     # obrázok: 12 zvodov, rekonštrukcia, výsledky (docs/zobrazenie.md)
 uv run streamlit run streamlit_app.py   # web aplikácia s rovnakým prehľadom (docs/zobrazenie.md)
+uv run ekg-final-eval --check   # záverečný test: overí zmrazené modely (docs/zaverecne_vyhodnotenie.md)
 uv run ekg-ae-analysis    # analýza chýb autoencodera (docs/analyza_autoencodera.md)
 uv run ekg-quality        # kontrola kvality záznamov (docs/kontrola_kvality.md)
 uv run ekg-explore        # prieskum datasetu, grafy (docs/prieskum_dat.md)

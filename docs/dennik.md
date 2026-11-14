@@ -468,3 +468,37 @@ micro F1 0,746. Všetkých 5 rozhodnutí správne má 62 % záznamov. Najlepší
 
 **Overenie:** 13 testov (`tests/test_clf_report.py`), výsledky v `docs/vysledky/clf_v1/hodnotenie/`,
 dokumentácia `docs/vyhodnotenie_klasifikatora.md`. Test množina nebola použitá.
+
+---
+
+## 2026-11-14 – Spoločná inference oboch modelov (issue #19)
+
+**Súlad so zadaním:** maturitné zadanie požaduje, aby výstup „zobrazil anomaly score a pravdepodobnosť
+jednotlivých porúch“. Výraz „anomaly score“ sa v projekte doteraz nevyskytoval (pole sa volalo
+`reconstruction_error`). **Rozhodnutie (Matúš):** nové pole `anomaly.anomaly_score` = priamo rekonštrukčná
+chyba, nie normalizovaná chyba / prah – presne podľa zadania („podľa rekonštrukčnej chyby“), bez kroku
+navyše. Kontrakt → schéma 1.2, staršie výstupy (1.0, 1.1) sa pri načítaní doplnia.
+
+**Pipeline (`ekg-predict`, `Pipeline`):** overenie vstupu → kontrola kvality → preprocessing z train →
+autoencoder (prah z #13) → klasifikátor (prahy z #17, beží vždy) → pravidlo súladu. Pri načítaní overí
+SHA256 prahov voči checkpointom a verzie preprocessingu, mapovania a splitov.
+
+**Pravidlo súladu:** zhoda = (A anomália a B aspoň 1 label) alebo (A v norme a B nič); bez pásma okolo prahu.
+Na validation nesúlad pri 29 % záznamov – najčastejšie „A v norme, B porucha“ (490), z toho 381 so skutočnou
+poruchou → autoencoder je menej citlivý (senzitivita 0,61). „A anomália, B nič“ (135) je najmä NORM (93), z toho 62 mimo prísneho NORM.
+Pôvodne som napísal „NORM so šumom“ – po kontrole má varovanie kvality iba 32 z 93, opravené.
+
+**Overenie:** chyby autoencodera sa od #13 líšia max. o 4·10⁻⁷ (rovnaká matica zámen), pravdepodobnosti
+klasifikátora od #17 max. o 7·10⁻⁷, žiadne zmenené rozhodnutie. 15 testov.
+
+**Problémy a omyly počas práce:**
+- **Pomalý jeden záznam:** v PyTorch 2.14 (ROCm build) trval záznam v dávke 1 pri 16 vláknach CPU ~0,3 s
+  na model (dávka 2 už ~4 ms). Prvý pokus o porovnanie dávka vs. samostatne bežal > 10 min, kým som ho
+  zastavil. S 1 vláknom ~2 ms (AE) a ~14 ms (klasifikátor).
+- **Výsledok závisel od dávky:** pravdepodobnosť záznamu v dávke a samostatne sa líšila v ~1e-7
+  (iné poradie sčítania). → pipeline počíta každý záznam samostatne v 1 vlákne: výsledok nezávisí od dávky
+  ani od počtu jadier a je to aj rýchlejšie (celá validation 13 s).
+- **Diera v zámku test množiny:** `--ecg-id` test množinu odmietal, ale cesta k súboru PTB-XL
+  (`records100/00000/00009_lr`) by ho obišla → záznamy PTB-XL zadané cestou sa spracujú rovnako ako `--ecg-id`.
+- Pri kontrole návratového kódu cez `wsl … bash -c '…; echo $?'` vyšlo 0 namiesto 1 – `$?` rozbalil
+  vonkajší shell; zo skriptu je kód správne 1.

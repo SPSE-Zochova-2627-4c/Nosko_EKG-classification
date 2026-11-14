@@ -1,7 +1,7 @@
 # Metadáta a export výsledkov (JSON, CSV)
 
 Kód: [`src/ekg/export.py`](../src/ekg/export.py) · JSON schéma:
-[`schema/vystup_v1.1.schema.json`](schema/vystup_v1.1.schema.json) · Príklady:
+[`schema/vystup_v1.2.schema.json`](schema/vystup_v1.2.schema.json) · Príklady:
 [`priklad_vystupu.json`](priklad_vystupu.json), [`priklad_exportu.csv`](priklad_exportu.csv)
 
 ```python
@@ -32,26 +32,26 @@ preto `null` s príznakom. Výška a hmotnosť sa neexportujú (v PTB-XL chýbaj
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "created_at": "2026-11-13T12:00:00+00:00",
   "disclaimer": "Výsledok modelu strojového učenia …, nie lekárska diagnóza.",
   "results": [ { "record_id": "…", "anomaly": {…}, "labels": {…}, … } ]
 }
 ```
 
-Formálna [JSON schéma](schema/vystup_v1.1.schema.json) (draft 2020-12) okrem štruktúry kontroluje aj
+Formálna [JSON schéma](schema/vystup_v1.2.schema.json) (draft 2020-12) okrem štruktúry kontroluje aj
 rozsahy: pravdepodobnosti v [0, 1], chyby ≥ 0, vek 0–89, povolené hodnoty `quality.status` a `sex`
 a prítomnosť všetkých 5 labelov a 12 zvodov. Testy overujú, že export schéme zodpovedá a že
 neplatné hodnoty schéma odmietne.
 
 ## CSV
 
-Plochá tabuľka pre Excel a analýzu: **1 riadok = 1 záznam**, 51 stĺpcov v tomto poradí:
+Plochá tabuľka pre Excel a analýzu: **1 riadok = 1 záznam**, 52 stĺpcov v tomto poradí:
 
 | Stĺpce | Význam |
 |---|---|
 | `record_id`, `schema_version` | identifikátor záznamu, verzia schémy |
-| `is_anomaly`, `reconstruction_error`, `anomaly_threshold` | výsledok Modelu A (#12, #13) |
+| `anomaly_score`, `is_anomaly`, `reconstruction_error`, `anomaly_threshold` | výsledok Modelu A (#12, #13); `anomaly_score` = rekonštrukčná chyba (od 1.2) |
 | `error_I` … `error_V6` | rekonštrukčná chyba po zvodoch (12 stĺpcov) |
 | `prob_MI` … `prob_AFIB` | pravdepodobnosti Modelu B (5 stĺpcov) |
 | `threshold_MI` … `threshold_AFIB` | prahy labelov (#17) |
@@ -77,3 +77,12 @@ Výstupy vo verzii 1.0 sa dajú načítať aj naďalej (chýbajúce pole = `fals
 Natrénované modely (checkpointy) obsahujú verziu schémy, s ktorou vznikli. Táto verzia sa pri načítaní
 modelu **ignoruje**, lebo formát výstupu s váhami modelu nesúvisí. Porovnávajú sa iba zvody, labely,
 frekvencia a dĺžka signálu. Bez toho by zmena schémy zneplatnila už natrénovaný autoencoder `ae_v1`.
+
+## Verzia schémy 1.1 → 1.2 (#19)
+
+Nové pole `anomaly.anomaly_score` (v CSV stĺpec `anomaly_score`) – **skóre anomálie** pomenované podľa
+maturitného zadania („výstup zobrazí anomaly score“). Jeho hodnota je **rovná rekonštrukčnej chybe**
+(`reconstruction_error`), kontrakt to pri vytvorení výsledku overí. Význam ani iné pole sa nemení,
+ide iba o pridanie, preto 1.2. Staršie výstupy (1.0, 1.1) v JSON aj CSV sa načítajú ďalej –
+chýbajúce `anomaly_score` sa doplní z `reconstruction_error` (nejde o odhad, je to tá istá hodnota)
+a verzia sa povýši na 1.2. Schéma 1.1 ostáva v repozitári pre staršie exporty.

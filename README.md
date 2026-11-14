@@ -111,6 +111,7 @@ uv run ekg-train-clf      # tréning klasifikátora, --resume po prerušení (do
 uv run ekg-clf-compare clf_v1 clf_v1_bez_vah   # porovnanie behov klasifikátora
 uv run ekg-calibrate-clf  # prahy pre labely na validation (docs/prahy_labelov.md)
 uv run ekg-clf-report     # vyhodnotenie klasifikátora a analýza chýb (docs/vyhodnotenie_klasifikatora.md)
+uv run ekg-predict --ecg-id 10   # oba modely na jednom zázname: anomaly score + 5 porúch (docs/inference.md)
 uv run ekg-ae-analysis    # analýza chýb autoencodera (docs/analyza_autoencodera.md)
 uv run ekg-quality        # kontrola kvality záznamov (docs/kontrola_kvality.md)
 uv run ekg-explore        # prieskum datasetu, grafy (docs/prieskum_dat.md)
@@ -137,6 +138,6 @@ uv run ruff format .     # formátovanie
 uv add <balík>           # pridanie novej knižnice
 ```
 
-Výstup systému: [docs/kontrakt.md](docs/kontrakt.md) (schéma 1.1), export do JSON/CSV: [docs/export.md](docs/export.md).
+Výstup systému: [docs/kontrakt.md](docs/kontrakt.md) (schéma 1.2), export do JSON/CSV: [docs/export.md](docs/export.md).
 
 Rozhodnutia a ich dôvody (aj neúspešné pokusy) sa zapisujú do [docs/dennik.md](docs/dennik.md).

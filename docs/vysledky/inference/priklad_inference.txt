@@ -1,0 +1,43 @@
+Záznam 10
+  anomaly score 0.0086 (prah 0.0384) → v norme
+  MI    P = 0.001 (prah 0.746) nie
+  STTC  P = 0.002 (prah 0.724) nie
+  CD    P = 0.034 (prah 0.792) nie
+  HYP   P = 0.001 (prah 0.606) nie
+  AFIB  P = 0.000 (prah 0.981) nie
+  súlad modelov: áno
+  Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza.
+Záznam 17
+  anomaly score 0.2492 (prah 0.0384) → ANOMÁLIA
+  MI    P = 0.752 (prah 0.746) ÁNO
+  STTC  P = 0.650 (prah 0.724) nie
+  CD    P = 0.658 (prah 0.792) nie
+  HYP   P = 0.025 (prah 0.606) nie
+  AFIB  P = 0.998 (prah 0.981) ÁNO
+  súlad modelov: áno
+  kvalita: warning – statický šum (všetky zvody)
+  Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza.
+Záznam 127
+  anomaly score 0.0223 (prah 0.0384) → v norme
+  MI    P = 0.012 (prah 0.746) nie
+  STTC  P = 0.908 (prah 0.724) ÁNO
+  CD    P = 0.007 (prah 0.792) nie
+  HYP   P = 0.012 (prah 0.606) nie
+  AFIB  P = 0.012 (prah 0.981) nie
+  súlad modelov: NIE
+    Model A nehlási anomáliu, ale Model B označil STTC (P = 0.91) – záznam odporúčame skontrolovať.
+  kvalita: warning – statický šum (I-AVR); drift základnej línie (II-AVF,V5)
+  Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza.
+Záznam 352
+  anomaly score 0.0777 (prah 0.0384) → ANOMÁLIA
+  MI    P = 0.105 (prah 0.746) nie
+  STTC  P = 0.034 (prah 0.724) nie
+  CD    P = 0.447 (prah 0.792) nie
+  HYP   P = 0.021 (prah 0.606) nie
+  AFIB  P = 0.000 (prah 0.981) nie
+  súlad modelov: NIE
+    Model A hlási anomáliu, ale Model B neoznačil žiadnu z porúch MI, STTC, CD, HYP, AFIB – môže ísť o inú poruchu, šum alebo falošný poplach.
+  kvalita: warning – statický šum (všetky zvody); drift základnej línie (III,V1)
+  Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza.
+JSON: docs/vysledky/inference/priklad_inference.json
+CSV: docs/vysledky/inference/priklad_inference.csv

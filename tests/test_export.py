@@ -32,6 +32,7 @@ def results():
     )
     b.consistency = contract.Consistency(models_agree=True, note=None)
     b.anomaly.reconstruction_error = 0.1 + 0.2  # 0.30000000000000004 – presnosť sa nesmie stratiť
+    b.anomaly.anomaly_score = b.anomaly.reconstruction_error
     b.model_versions = {"autoencoder": "ae_v1"}  # klasifikátor chýba
     return [a, b]
 
@@ -100,7 +101,29 @@ def test_old_schema_1_0_still_loads_and_upgrades(results):
     old["schema_version"] = "1.0"
     del old["metadata"]["age_over_89"]  # v 1.0 pole neexistovalo
     loaded = contract.PredictionResult.from_dict(old)
-    assert loaded.schema_version == "1.1" and loaded.metadata.age_over_89 is False
+    assert loaded.schema_version == contract.SCHEMA_VERSION and loaded.metadata.age_over_89 is False
+    assert loaded.anomaly.anomaly_score == loaded.anomaly.reconstruction_error
+
+
+def test_schema_1_1_without_anomaly_score_upgrades(results, tmp_path):
+    old = results[0].to_dict()
+    old["schema_version"] = "1.1"
+    del old["anomaly"]["anomaly_score"]  # pole pribudlo v 1.2
+    loaded = contract.PredictionResult.from_dict(old)
+    assert loaded.schema_version == "1.2"
+    assert loaded.anomaly.anomaly_score == results[0].anomaly.reconstruction_error
+    # CSV 1.1 bez stĺpca anomaly_score
+    row = export.to_row(results[0])
+    row["schema_version"] = "1.1"
+    del row["anomaly_score"]
+    assert export.from_row(row) == results[0]
+
+
+def test_anomaly_score_must_equal_reconstruction_error(results):
+    data = results[0].to_dict()
+    data["anomaly"]["anomaly_score"] = 0.5
+    with pytest.raises(ValueError, match="anomaly_score"):
+        contract.PredictionResult.from_dict(data)
 
 
 # --- CSV ---------------------------------------------------------------------

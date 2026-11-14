@@ -1,7 +1,7 @@
 """Metadáta záznamu a export výsledkov do JSON a CSV (issue #21).
 
 JSON – úplný, vnorený formát (presne štruktúra PredictionResult z kontraktu):
-    {"schema_version": "1.1", "created_at": "...", "results": [ {…}, {…} ]}
+    {"schema_version": "1.2", "created_at": "...", "results": [ {…}, {…} ]}
 
 CSV – plochá tabuľka, jeden riadok = jeden záznam, stĺpce v CSV_COLUMNS
 (popis v docs/export.md). Chýbajúca hodnota = prázdna bunka, nikdy odhad.
@@ -31,8 +31,10 @@ PTBXL_ANONYMIZED_AGE = 300  # PTB-XL uvádza 300 pre pacientov starších ako 89
 ISSUE_SEPARATOR = " | "
 
 MODEL_KEYS = ("autoencoder", "classifier")
+OLD_WITHOUT_SCORE = ("1.0", "1.1")  # CSV bez stĺpca anomaly_score (pridaný v schéme 1.2)
 CSV_COLUMNS = (
-    ["record_id", "schema_version", "is_anomaly", "reconstruction_error", "anomaly_threshold"]
+    ["record_id", "schema_version", "anomaly_score", "is_anomaly", "reconstruction_error"]
+    + ["anomaly_threshold"]
     + [f"error_{lead}" for lead in contract.LEADS]
     + [f"prob_{label}" for label in contract.LABELS]
     + [f"threshold_{label}" for label in contract.LABELS]
@@ -107,6 +109,7 @@ def to_row(r: PredictionResult) -> dict[str, str]:
     row = {
         "record_id": r.record_id,
         "schema_version": r.schema_version,
+        "anomaly_score": r.anomaly.anomaly_score,
         "is_anomaly": r.anomaly.is_anomaly,
         "reconstruction_error": r.anomaly.reconstruction_error,
         "anomaly_threshold": r.anomaly.threshold,
@@ -147,16 +150,19 @@ def _opt(text: str) -> str | None:
 
 
 def from_row(row: dict[str, str]) -> PredictionResult:
+    if row.get("schema_version") not in contract.SUPPORTED_SCHEMA_VERSIONS:
+        raise ValueError(f"Nepodporovaná verzia schémy {row.get('schema_version')!r}.")
+    if row["schema_version"] in OLD_WITHOUT_SCORE and "anomaly_score" not in row:
+        row = {**row, "anomaly_score": row.get("reconstruction_error", "")}
     missing = [c for c in CSV_COLUMNS if c not in row]
     if missing:
         raise ValueError(f"CSV nemá stĺpce: {missing}")
-    if row["schema_version"] not in contract.SUPPORTED_SCHEMA_VERSIONS:
-        raise ValueError(f"Nepodporovaná verzia schémy {row['schema_version']!r}.")
     issues = row["quality_issues"]
     return PredictionResult(
         record_id=row["record_id"],
         model_versions={k: row[f"model_{k}"] for k in MODEL_KEYS if row[f"model_{k}"] != ""},
         anomaly=AnomalyResult(
+            anomaly_score=float(row["anomaly_score"]),
             is_anomaly=_parse_bool(row["is_anomaly"]),
             reconstruction_error=float(row["reconstruction_error"]),
             threshold=float(row["anomaly_threshold"]),

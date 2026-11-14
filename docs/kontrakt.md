@@ -1,4 +1,4 @@
-# Kontrakt vstupov a výstupov (verzia schémy 1.1)
+# Kontrakt vstupov a výstupov (verzia schémy 1.2)
 
 Tento dokument určuje, čo systém prijíma a čo vracia. V kóde ho implementuje
 [`src/ekg/contract.py`](../src/ekg/contract.py). Ostatné časti projektu (loader, modely,
@@ -62,10 +62,11 @@ pravdepodobností nemusí byť 1 a pozitívnych môže byť viac labelov naraz.
 
 | Pole | Typ | Popis | Kto ho plní |
 |---|---|---|---|
-| `schema_version` | str | verzia tejto schémy, teraz `"1.1"` | – |
+| `schema_version` | str | verzia tejto schémy, teraz `"1.2"` | – |
 | `record_id` | str | identifikátor záznamu (napr. `ecg_id` z PTB-XL alebo názov súboru) | inference |
 | `model_versions` | {str: str} | verzie použitých checkpointov | #19 |
-| `anomaly.is_anomaly` | bool | `reconstruction_error >= threshold` | Model A, #13 |
+| `anomaly.anomaly_score` | float ≥ 0 | **skóre anomálie** = rekonštrukčná chyba (od 1.2, názov podľa maturitného zadania) | #19 |
+| `anomaly.is_anomaly` | bool | `anomaly_score >= threshold` | Model A, #13 |
 | `anomaly.reconstruction_error` | float | jedno skóre na záznam | #12 |
 | `anomaly.threshold` | float | prah kalibrovaný na validation | #13 |
 | `anomaly.error_per_lead` | {zvod: float} | chyba po zvodoch v poradí `LEADS` | #12 |
@@ -89,12 +90,16 @@ Chýbajúce metadáta sú vždy `null`, nikdy sa nedopĺňajú odhadom.
 Modely môžu nesúhlasiť: autoencoder nehlási anomáliu, ale klasifikátor dá napríklad
 P(MI) = 0.85, alebo naopak. Výstup v takom prípade **zachová výsledky oboch modelov**
 a nastaví `consistency.models_agree = false` s vysvetlením v `note`. Žiadny model druhý neprebije.
-Presné pravidlo (napr. či sa počíta aj hraničný prípad) doplní #19.
+
+**Pravidlo (#19):** modely sa zhodujú, ak Model A hlási anomáliu **a** Model B označil aspoň jeden label,
+alebo ak Model A anomáliu nehlási **a** Model B neoznačil žiadny label. Rozhoduje iba porovnanie
+s prahmi, hraničné pásmo okolo prahu sa nepoužíva. Podrobnosti a početnosti na validation:
+[inference.md](inference.md).
 
 ### Príklad výstupu
 
 Súbor [`priklad_vystupu.json`](priklad_vystupu.json). Čísla sú **vymyslené** na ilustráciu,
-nepochádzajú z modelu. Ukazuje práve prípad rozporu modelov. Test `tests/test_contract.py`
+nepochádzajú z modelu (skutočné výstupy modelov: [`vysledky/inference/`](vysledky/inference/)). Ukazuje práve prípad rozporu modelov. Test `tests/test_contract.py`
 overuje, že tento príklad zodpovedá kódu.
 
 ```json
@@ -102,6 +107,7 @@ overuje, že tento príklad zodpovedá kódu.
   "record_id": "PRIKLAD-0001",
   "model_versions": {"autoencoder": "ae-0.0.0", "classifier": "resnet1d-0.0.0"},
   "anomaly": {
+    "anomaly_score": 0.0142,
     "is_anomaly": false,
     "reconstruction_error": 0.0142,
     "threshold": 0.0215,
@@ -120,7 +126,7 @@ overuje, že tento príklad zodpovedá kódu.
   },
   "quality": {"status": "ok", "issues": []},
   "metadata": {"age": 63, "sex": "male", "source": "PTB-XL"},
-  "schema_version": "1.0",
+  "schema_version": "1.2",
   "disclaimer": "Výsledok modelu strojového učenia na výskumné a vzdelávacie účely, nie lekárska diagnóza."
 }
 ```
@@ -131,8 +137,9 @@ overuje, že tento príklad zodpovedá kódu.
 |---|---|
 | 1.0 | prvá verzia (#2) |
 | 1.1 | pridané voliteľné `metadata.age_over_89` (#21) – PTB-XL anonymizuje vek > 89 hodnotou 300 |
+| 1.2 | pridané `anomaly.anomaly_score` = rekonštrukčná chyba (#19); staršie výstupy sa doplnia pri načítaní |
 
-Formálna JSON schéma: [`schema/vystup_v1.1.schema.json`](schema/vystup_v1.1.schema.json). Export do JSON/CSV: [export.md](export.md).
+Formálna JSON schéma: [`schema/vystup_v1.2.schema.json`](schema/vystup_v1.2.schema.json). Export do JSON/CSV: [export.md](export.md).
 
 
 - Pridanie nového **voliteľného** poľa → `1.x` (napr. `1.1`).

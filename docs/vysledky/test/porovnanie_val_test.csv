@@ -1,0 +1,33 @@
+model,metrika,validation,test,rozdiel
+Model A,AUROC,0.8321,0.7956,-0.0366
+Model A,AUPRC,0.9331,0.9141,-0.0190
+Model A,senzitivita,0.6121,0.5863,-0.0258
+Model A,špecificita,0.9097,0.8578,-0.0519
+Model A,precision,0.9487,0.9178,-0.0309
+Model A,F1,0.7441,0.7155,-0.0286
+Model B macro,AUROC,0.9378,0.9290,-0.0088
+Model B macro,AUPRC,0.8190,0.8075,-0.0114
+Model B macro,F1,0.7585,0.7450,-0.0135
+Model B macro,precision,0.7273,0.7227,-0.0046
+Model B macro,recall,0.8008,0.7772,-0.0236
+Model B micro,F1,0.7462,0.7349,-0.0113
+Model B MI,AUROC,0.9246,0.9103,-0.0143
+Model B MI,F1,0.7368,0.7175,-0.0192
+Model B MI,recall,0.7981,0.7782,-0.0200
+Model B MI,precision,0.6841,0.6656,-0.0185
+Model B STTC,AUROC,0.9317,0.9327,0.0010
+Model B STTC,F1,0.7598,0.7646,0.0049
+Model B STTC,recall,0.7727,0.7639,-0.0088
+Model B STTC,precision,0.7473,0.7654,0.0181
+Model B CD,AUROC,0.9335,0.9173,-0.0162
+Model B CD,F1,0.7866,0.7675,-0.0191
+Model B CD,recall,0.7818,0.7520,-0.0298
+Model B CD,precision,0.7914,0.7836,-0.0078
+Model B HYP,AUROC,0.9075,0.9034,-0.0040
+Model B HYP,F1,0.6124,0.6060,-0.0064
+Model B HYP,recall,0.7575,0.7366,-0.0208
+Model B HYP,precision,0.5139,0.5147,0.0007
+Model B AFIB,AUROC,0.9917,0.9813,-0.0103
+Model B AFIB,F1,0.8970,0.8696,-0.0274
+Model B AFIB,recall,0.8940,0.8553,-0.0388
+Model B AFIB,precision,0.9000,0.8844,-0.0156

@@ -207,3 +207,54 @@ def test_test_set_is_evaluated_only_in_final_evaluation():
     assert sorted(openers) == ["data/check_pipeline.py", "evaluation/final_evaluation.py"]
     check = openers["data/check_pipeline.py"]
     assert "ekg.models" not in check and "ekg.inference" not in check  # žiadny model
+
+
+# --- uložené výsledky záverečného vyhodnotenia ------------------------------------------
+
+
+def test_saved_report_belongs_to_freeze():
+    import hashlib
+    import json
+
+    freeze_path = RESULTS / "zmrazenie.json"
+    report = json.loads((RESULTS / "report.json").read_text("utf-8"))
+    freeze = json.loads(freeze_path.read_text("utf-8"))
+    assert report["freeze_sha256"] == hashlib.sha256(freeze_path.read_bytes()).hexdigest()
+    assert report["split"] == "test" and report["patient_overlap"] == {"train": 0, "val": 0}
+    assert report["n_records"] == 2198 and report["n_records_classifier"] == 2166
+    # verzie modelov vo výstupe = zmrazené checkpointy
+    for key, run in (("autoencoder", "ae_v1"), ("classifier", "clf_v1")):
+        assert freeze["sha256"][f"checkpoints/{run}/best.pt"][:12] in report["model_versions"][key]
+    for name in contract.LABELS:
+        m = report["classifier"]["labels"][name]
+        assert m["support"] + m["n_neg"] == 2166
+        for key in ("precision", "recall", "specificity", "F1", "AUROC", "AUPRC"):
+            assert m[key] is not None or key in m["undefined"]
+
+
+def test_saved_predictions_reproduce_report():
+    """Z uložených predikcií (CSV, schéma 1.2) sa dajú prepočítať matice zámen reportu."""
+    import json
+
+    from ekg import export
+    from ekg.data import splits
+
+    report = json.loads((RESULTS / "report.json").read_text("utf-8"))
+    results = export.load_csv(RESULTS / "predikcie_test.csv")
+    assert len(results) == 2198
+    manifest = splits.load_manifest()
+    ids = [int(r.record_id) for r in results]
+    assert set(manifest.loc[ids, "split"]) == {"test"}
+    clf_ids = [i for i in ids if manifest.loc[i, "usable_classifier"]]
+    by_id = {int(r.record_id): r for r in results}
+    for name in contract.LABELS:
+        y = manifest.loc[clf_ids, name].to_numpy(bool)
+        d = np.array([by_id[i].labels[name].positive for i in clf_ids])
+        m = report["classifier"]["labels"][name]
+        assert (int((y & d).sum()), int((~y & d).sum())) == (m["TP"], m["FP"])
+    ae = report["autoencoder"]
+    strict = manifest.loc[ids, "strict_norm"].to_numpy(bool)
+    abnormal = manifest.loc[ids, list(contract.LABELS)].sum(axis=1).to_numpy() > 0
+    anomaly = np.array([by_id[i].anomaly.is_anomaly for i in ids])
+    assert int((anomaly & abnormal).sum()) == ae["TP"]
+    assert int((anomaly & strict & ~abnormal).sum()) == ae["FP"]

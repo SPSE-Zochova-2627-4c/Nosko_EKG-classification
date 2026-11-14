@@ -119,6 +119,7 @@ EKG záznam (12 × 1000, mV, 100 Hz)
 | výstup | kontrakt (schéma 1.2), export JSON / CSV, inference oboch modelov, pravidlo súladu | [kontrakt.md](docs/kontrakt.md), [export.md](docs/export.md), [inference.md](docs/inference.md) |
 | zobrazenie | obrázok (12 zvodov, rekonštrukcia, výsledky) a web aplikácia | [zobrazenie.md](docs/zobrazenie.md) |
 | záverečný test | zmrazenie → jediný beh na test množine | [zaverecne_vyhodnotenie.md](docs/zaverecne_vyhodnotenie.md) |
+| mapy dôležitosti | na čo sa modely pozerajú: Integrated Gradients a Grad-CAM (Model B), chyba v čase (Model A); kontrola na validation | [vysvetlenie.md](docs/vysvetlenie.md) |
 | podskupiny | výsledky podľa veku, pohlavia a kvality signálu s 95 % CI (opisne, bez zmeny modelov) | [podskupiny.md](docs/podskupiny.md) |
 
 ## Reprodukcia celého postupu

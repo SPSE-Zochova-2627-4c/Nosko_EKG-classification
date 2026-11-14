@@ -98,6 +98,10 @@ Otvor http://localhost:8501.
    Nahraj `00127_lr.hea` aj `00127_lr.dat` → rovnaký výsledok ako v kroku 2.
 6. (S datasetom) zdroj **„PTB-XL“** → ľubovoľné `ecg_id`; napr. **9** → „Záznam nie je dostupný – patrí
    do test množiny, ktorá je zamknutá“.
+7. **Na čo sa modely pozerajú** (#27, pod obrázkom): pri ukážke *17 – AFIB* je predvolene vybraná mapa
+   AFIB (P 0,998, najväčší podiel V5 14 %); prepni na **Model A** → chyba je najmä v II, III, aVF.
+   Pri ukážke *352* (Model A) je takmer celá chyba v prvej sekunde – artefakt. Popis a obmedzenia máp:
+   [vysvetlenie.md](vysvetlenie.md).
 
 ## Ako sa overilo, že demo funguje
 

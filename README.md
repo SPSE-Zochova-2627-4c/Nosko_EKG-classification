@@ -119,6 +119,7 @@ EKG záznam (12 × 1000, mV, 100 Hz)
 | výstup | kontrakt (schéma 1.2), export JSON / CSV, inference oboch modelov, pravidlo súladu | [kontrakt.md](docs/kontrakt.md), [export.md](docs/export.md), [inference.md](docs/inference.md) |
 | zobrazenie | obrázok (12 zvodov, rekonštrukcia, výsledky) a web aplikácia | [zobrazenie.md](docs/zobrazenie.md) |
 | záverečný test | zmrazenie → jediný beh na test množine | [zaverecne_vyhodnotenie.md](docs/zaverecne_vyhodnotenie.md) |
+| podskupiny | výsledky podľa veku, pohlavia a kvality signálu s 95 % CI (opisne, bez zmeny modelov) | [podskupiny.md](docs/podskupiny.md) |
 
 ## Reprodukcia celého postupu
 
@@ -177,6 +178,10 @@ a `libc6-dev`. Inference beží vždy na CPU vo float32 (reprodukovateľný výs
   označiť ako anomáliu bez konkrétneho labelu.
 - **Autoencoder je slabý detektor** (test AUROC 0,796, zachytí ~60 % patológií) a na teste mal viac
   falošných poplachov ako na validation.
+- **Autoencoder závisí od veku a šumu** ([podskupiny.md](docs/podskupiny.md)): u ľudí pod 60 rokov
+  zachytí menej patológií (test AUROC 0,68 – 0,71), u ľudí nad 80 rokov označí ako anomáliu väčšinu
+  záznamov bez labelu (59 – 71 %) a pri šume je poplachov o 50 – 80 % viac. Trénoval sa na prísnom NORM
+  s mediánom veku 53 rokov. Klasifikátor je voči šumu odolný a medzi pohlaviami bez presvedčivého rozdielu.
 - **Iba 100 Hz a 10 s.** Iná frekvencia alebo dĺžka sa odmietne; jemné zmeny P vlny (napr. zväčšenie
   predsiení) sú pri 100 Hz ťažko zachytiteľné.
 - **Prahy** sú nastavené na F1 / Youdenov index, nie na klinicky zvolenú citlivosť.

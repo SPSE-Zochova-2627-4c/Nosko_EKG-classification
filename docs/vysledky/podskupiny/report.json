@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-11-14T16:01:13+00:00",
+  "runs": {
+    "autoencoder": "ae_v1",
+    "classifier": "clf_v1"
+  },
+  "source": {
+    "val": "zmrazená pipeline #19 na validation (CPU, po jednom zázname)",
+    "test": "uložené predikcie z #22 (docs/vysledky/test/predikcie_test.csv)"
+  },
+  "n_records": {
+    "val": 2183,
+    "test": 2198
+  },
+  "n_bootstrap": 1000,
+  "min_cases": 30,
+  "metric_states": {
+    "ok": 407,
+    "nedefinovaná": 154,
+    "malá skupina": 143
+  },
+  "note": "Opisná analýza; modely ani prahy sa nemenili (overené proti zmrazeniu #22)."
+}

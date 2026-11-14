@@ -1,5 +1,5 @@
 {
-  "description": "Zmeny kódu po záverečnom teste (#22). Povolené iba pre kód v src/ a iba zdokumentované; modely, prahy, dáta, manifesty a uv.lock sa po teste nemenia. ekg-final-eval --check ich vypíše.",
+  "description": "Zmeny kódu po záverečnom teste (#22). Povolené iba pre kód v src/ a iba zdokumentované (sha256_before/sha256_frozen = SHA pred zmenou, null = nový súbor; viac zmien jedného súboru tvorí reťaz); modely, prahy, dáta, manifesty a uv.lock sa po teste nemenia. ekg-final-eval --check ich vypíše.",
   "changes": [
     {
       "file": "src/ekg/inference.py",
@@ -20,6 +20,26 @@
       "reason": "kontrola zmrazenia (--check) prijme zdokumentované zmeny kódu po teste (tento súbor); vyhodnocovací výpočet sa nezmenil",
       "affects_results": false,
       "verification": "zmenené iba funkcie check_freeze, post_test_changes, accepted_change a výpis --check; funkcie výpočtu metrík sú rovnaké; testy v tests/test_final_evaluation.py (zdokumentovaná zmena kódu prijatá, zmena modelov/prahov/dát nikdy, nezdokumentovaná zmena odmietnutá)"
+    },
+    {
+      "file": "src/ekg/evaluation/final_evaluation.py",
+      "sha256_before": "b8d9afec90d950d45236ad4e887b65d6755cac30f4ff3bab90e35237a49a08e9",
+      "sha256_now": "f2ea2815ed966397c4efd9e2d066e49ff89d97e9866da4137aebeb090cb3cc27",
+      "date": "2026-11-14",
+      "issue": "#26",
+      "reason": "kontrola zmrazenia prijme aj reťaz zapísaných zmien toho istého súboru a zapísaný nový súbor v src/ (sha256_before = null); upravený docstring",
+      "affects_results": false,
+      "verification": "zmenené iba _sha_before, accepted_change, check_freeze (nové súbory) a výpis --check; výpočet metrík je rovnaký; testy tests/test_final_evaluation.py (nový súbor a reťaz zmien prijaté, chýbajúci krok, nezapísaná úprava a súbor mimo src/ odmietnuté)"
+    },
+    {
+      "file": "src/ekg/evaluation/subgroups.py",
+      "sha256_before": null,
+      "sha256_now": "35d61a99204945c8ca8de1b017ad2356e7a0f8af9d6fd5a5900677e8e56df316",
+      "date": "2026-11-14",
+      "issue": "#26",
+      "reason": "nový súbor: opisná analýza výsledkov podľa veku, pohlavia a kvality signálu (ekg-subgroups, docs/podskupiny.md)",
+      "affects_results": false,
+      "verification": "test množinu iba číta (uložené predikcie z #22 + labely), model na nej nespúšťa; riadok 'všetky' na teste sa presne zhoduje s report.json (tests/test_subgroups.py::test_all_records_row_reproduces_final_test_report); modely, prahy a dáta overené proti zmrazeniu pred behom"
     }
   ]
 }

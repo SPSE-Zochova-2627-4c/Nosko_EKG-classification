@@ -11,7 +11,8 @@ Postup (každý krok je samostatný príkaz, aby sa dalo doložiť poradie):
 Vyhodnotenie výsledky neprepíše (už existujúci report = chyba). Po pohľade na test výsledky sa
 nič neladí; prípadné ďalšie pokusy patria do iného adresára a označujú sa ako exploratívne.
 
-Test množina sa načíta iba tu: splits.split_ids("test", allow_test=True).
+Test množina sa vyhodnocuje iba tu: splits.split_ids("test", allow_test=True). (Analýza
+podskupín #26 z test množiny číta iba labely k predikciám uloženým týmto skriptom.)
 Výstupy: docs/vysledky/test/ (report, metriky, predikcie CSV, analýza chýb), JSON predikcií
 v outputs/test/.
 """
@@ -130,15 +131,29 @@ def post_test_changes() -> list[dict]:
     return json.loads(path.read_text("utf-8"))["changes"]
 
 
-def accepted_change(rel: str, frozen: str, now: str, changes: list[dict]) -> dict | None:
-    """Zmena súboru je povolená, iba ak ide o kód v src/ a je zdokumentovaná presne
-    (pôvodný SHA256 = zmrazený, nový SHA256 = súčasný). Modely, prahy, dáta a uv.lock nikdy."""
+def _sha_before(change: dict) -> str | None:
+    """SHA256 súboru pred zmenou: sha256_before (od #26), v záznamoch z #23 sha256_frozen.
+    None = súbor pri zmrazení neexistoval (nový súbor)."""
+    return change["sha256_before"] if "sha256_before" in change else change["sha256_frozen"]
+
+
+def accepted_change(
+    rel: str, frozen: str | None, now: str, changes: list[dict]
+) -> list[dict] | None:
+    """Zmena súboru je povolená, iba ak ide o kód v src/ a je zdokumentovaná presne: reťaz
+    zdokumentovaných zmien vedie od zmrazeného SHA256 (None = nový súbor) k súčasnému.
+    Vráti túto reťaz, inak None. Modely, prahy, dáta a uv.lock nikdy."""
     if not rel.startswith("src/"):
         return None
-    for change in changes:
-        if (change["file"], change["sha256_frozen"], change["sha256_now"]) == (rel, frozen, now):
-            return change
-    return None
+    steps = [c for c in changes if c["file"] == rel]
+    chain, digest = [], frozen
+    while digest != now:
+        step = next((c for c in steps if _sha_before(c) == digest and c not in chain), None)
+        if step is None:
+            return None
+        chain.append(step)
+        digest = step["sha256_now"]
+    return chain or None
 
 
 def check_freeze(freeze: dict, changes: list[dict] | None = None) -> list[str]:
@@ -157,7 +172,8 @@ def check_freeze(freeze: dict, changes: list[dict] | None = None) -> list[str]:
         ):
             problems.append(f"zmenený {rel}")
     for rel in sorted(set(current) - set(freeze["sha256"])):
-        problems.append(f"nový súbor {rel}")
+        if not accepted_change(rel, None, _sha256(current[rel]), changes or []):
+            problems.append(f"nový súbor {rel}")
     for key, value in freeze["versions"].items():
         if versions().get(key) != value:
             problems.append(f"iná verzia {key}: {versions().get(key)} ≠ {value}")
@@ -481,10 +497,11 @@ def main(argv: list[str] | None = None) -> int:
             print("\n".join(problems))
             return 1
         print("Zmrazenie sedí.")
-        current = frozen_files()
-        for c in changes:
-            if _sha256(current[c["file"]]) != freeze["sha256"][c["file"]]:
-                print(f"  zmena kódu po teste ({c['issue']}): {c['file']} – {c['reason']}")
+        for rel, path in frozen_files().items():
+            frozen = freeze["sha256"].get(rel)
+            for c in accepted_change(rel, frozen, _sha256(path), changes) or []:
+                kind = "nový súbor" if _sha_before(c) is None else "zmena kódu"
+                print(f"  {kind} po teste ({c['issue']}): {c['file']} – {c['reason']}")
         return 0
     return run(force=args.force)
 

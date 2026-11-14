@@ -142,8 +142,9 @@ Oprava je jedna podmienka v `src/ekg/inference.py` – teda zmena zmrazeného k�
 Aby zmrazenie ostalo dôveryhodné, zmeny po teste sa **evidujú** v
 [`zmeny_po_teste.json`](vysledky/test/zmeny_po_teste.json) (pôvodný a nový SHA256, dôvod, overenie):
 
-- povolené sú **iba zmeny kódu v `src/`**, ktoré sú zapísané presne (pôvodný SHA256 = zmrazený,
-  nový = súčasný); akákoľvek ďalšia, nezapísaná zmena je pri `--check` chyba,
+- povolené sú **iba zmeny kódu v `src/`**, ktoré sú zapísané presne: reťaz zapísaných zmien musí viesť
+  od zmrazeného SHA256 k súčasnému (od #26 aj viac zmien toho istého súboru za sebou a **nový súbor**
+  s `sha256_before = null`); akákoľvek ďalšia, nezapísaná zmena je pri `--check` chyba,
 - **modely, prahy, dáta, manifesty a `uv.lock` sa po teste meniť nesmú vôbec** – ani so záznamom,
 - `uv run ekg-final-eval --check` vypíše „Zmrazenie sedí.“ a pod tým každú zapísanú zmenu.
 
@@ -151,6 +152,8 @@ Aby zmrazenie ostalo dôveryhodné, zmeny po teste sa **evidujú** v
 |---|---|---|
 | `src/ekg/inference.py` | `ptbxl_records([])` nenačíta databázu (2 riadky) | žiadny – výstupy pre záznamy 10, 17, 127, 352 sú zhodné s #19 |
 | `src/ekg/evaluation/final_evaluation.py` | `--check` prijme zapísané zmeny kódu | žiadny – výpočet metrík sa nezmenil |
+| `src/ekg/evaluation/final_evaluation.py` (#26) | `--check` prijme aj reťaz zmien a zapísaný nový súbor | žiadny – výpočet metrík sa nezmenil |
+| `src/ekg/evaluation/subgroups.py` (#26, nový) | analýza podľa veku, pohlavia a kvality ([podskupiny.md](podskupiny.md)) | žiadny – iba číta uložené predikcie testu z #22 |
 
 Výsledky tohto dokumentu pochádzajú z behu so zmrazeným kódom (commit `a96600e`).
 

@@ -1,0 +1,41 @@
+SNOMED,skratka,label,typ,záznamov
+164889003,AF,AFIB,pozitívny,570
+195080001,AFAFL,AFIB,pozitívny,2
+270492004,IAVB,CD,pozitívny,769
+59118001,RBBB,CD,pozitívny,542
+713426002,IRBBB,CD,pozitívny,407
+164909002,LBBB,CD,pozitívny,231
+698252002,NSIVCB,CD,pozitívny,203
+445118002,LAnFB,CD,pozitívny,180
+6374002,BBB,CD,pozitívny,116
+251120003,ILBBB,CD,pozitívny,86
+233917008,AVB,CD,pozitívny,74
+713427006,CRBBB,CD,pozitívny,28
+445211001,LPFB,CD,pozitívny,25
+195042002,IIAVB,CD,pozitívny,23
+27885002,CHB,CD,pozitívny,8
+74390002,WPW,CD,pozitívny,2
+733534002,CLBBB,CD,pozitívny,0
+164947007,LPR,CD,nejasný (nehodnotí sa),0
+164873001,LVH,HYP,pozitívny,1232
+67741000119109,LAE,HYP,pozitívny,870
+89792004,RVH,HYP,pozitívny,86
+253352002,LAA,HYP,pozitívny,72
+266249003,VH,HYP,pozitívny,71
+195126007,AH,HYP,pozitívny,60
+253339007,RAAb,HYP,pozitívny,14
+446358003,RAH,HYP,pozitívny,0
+55827005,LVHV,HYP,nejasný (nehodnotí sa),0
+164865005,MI,MI,pozitívny,7
+164917005,QAb,MI,nejasný (nehodnotí sa),464
+428750005,NSSTTA,STTC,pozitívny,1883
+111975006,LQT,STTC,pozitívny,1391
+425623009,LIs,STTC,pozitívny,903
+425419005,IIs,STTC,pozitívny,451
+426434006,AnMIs,STTC,pozitívny,281
+413444003,AMIs,STTC,pozitívny,1
+164934002,TAb,STTC,nejasný (nehodnotí sa),2306
+164930006,STIAb,STTC,nejasný (nehodnotí sa),992
+59931005,TInv,STTC,nejasný (nehodnotí sa),812
+164931005,STE,STTC,nejasný (nehodnotí sa),134
+429622005,STD,STTC,nejasný (nehodnotí sa),38

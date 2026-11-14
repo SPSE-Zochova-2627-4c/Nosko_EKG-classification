@@ -1,0 +1,29 @@
+model,metrika,PTB-XL test,Georgia,rozdiel
+Model A,AUROC,0.7956,0.7966,0.0011
+Model A,senzitivita,0.5863,0.6937,0.1073
+Model A,špecificita,0.8578,0.7653,-0.0925
+Model B MI,AUROC,0.9103,0.7284,-0.1819
+Model B MI,F1,0.7175,0.0037,-0.7138
+Model B MI,recall,0.7782,0.8571,0.0790
+Model B MI,precision,0.6656,0.0019,-0.6638
+Model B MI,specificity,0.8670,0.6432,-0.2237
+Model B STTC,AUROC,0.9327,0.8300,-0.1027
+Model B STTC,F1,0.7646,0.6889,-0.0757
+Model B STTC,recall,0.7639,0.6112,-0.1528
+Model B STTC,precision,0.7654,0.7894,0.0240
+Model B STTC,specificity,0.9258,0.8576,-0.0683
+Model B CD,AUROC,0.9173,0.8957,-0.0215
+Model B CD,F1,0.7675,0.6812,-0.0863
+Model B CD,recall,0.7520,0.8002,0.0482
+Model B CD,precision,0.7836,0.5930,-0.1906
+Model B CD,specificity,0.9383,0.8312,-0.1071
+Model B HYP,AUROC,0.9034,0.8123,-0.0911
+Model B HYP,F1,0.6060,0.5665,-0.0394
+Model B HYP,recall,0.7366,0.5273,-0.2093
+Model B HYP,precision,0.5147,0.6121,0.0974
+Model B HYP,specificity,0.9044,0.8991,-0.0053
+Model B AFIB,AUROC,0.9813,0.9269,-0.0544
+Model B AFIB,F1,0.8696,0.6760,-0.1936
+Model B AFIB,recall,0.8553,0.6831,-0.1722
+Model B AFIB,precision,0.8844,0.6690,-0.2154
+Model B AFIB,specificity,0.9916,0.9784,-0.0131

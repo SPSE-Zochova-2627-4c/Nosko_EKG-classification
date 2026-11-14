@@ -661,3 +661,34 @@ odrážajú samotný signál; Grad-CAM −0,03.
 - Pri generovaní príkladov sa „Model A“ v skripte rozdelilo na dve slová (chýbajúce úvodzovky).
 - Kontrolu na náhodnom modeli som pridal až po prvých obrázkoch: mapy „pekne“ zvýrazňovali QRS
   a chcel som vedieť, či to nie je vlastnosť metódy. Čiastočne je.
+
+---
+
+## 2026-11-14 – Externá validácia na datasete Georgia (issue #31)
+
+**Čo pribudlo:** `ekg-external` (`src/ekg/evaluation/external.py`) – mapovanie diagnóz SNOMED CT na
+5 labelov, prevzorkovanie 500 → 100 Hz, vyhodnotenie zmrazenej pipeline, rozbor podľa kódov a posun
+domény. Dokument [externa_validacia.md](externa_validacia.md), výstupy v `docs/vysledky/externa/`.
+
+**Rozhodnutia:**
+- **Georgia (G12EC)** z PhysioNet Challenge 2021 v1.0.3: jediný z navrhnutých datasetov s 10 s
+  záznamami a diagnózami pre AFIB, CD, HYP aj STTC. MI má iba 7 záznamov – Matúš súhlasil so
+  stiahnutím s vedomím, že MI sa hodnotiť nedá.
+- Mapovanie iba na ekvivalenty diagnostických kódov PTB-XL; „tvarové“ nálezy (abnormálna T, Q vlny,
+  napäťové kritérium LVH, predĺžené PR) sú pre svoj label nejasné a nehodnotia sa.
+- Záznamy kratšie ako 10 s sa vynechali namiesto dopĺňania; nič sa neladilo ani neprekalibrovalo.
+
+**Zistenia:** macro AUROC 4 labelov 0,934 → 0,866 (CD 0,896 a AFIB 0,927 držia, STTC 0,830 a HYP
+0,812 klesli), autoencoder rovnaké AUROC 0,797, ale o 9 bodov nižšia špecificita. Príčiny:
+menší rozkmit hrudných zvodov (−14 až −25 %) a o 29 % vyššia chyba rekonštrukcie na normálnych
+záznamoch, prahy sa neprenášajú (AFIB recall 0,68 pri AUROC 0,93) a iné kódovanie diagnóz
+(MI pri 16 % záznamov iba so sínusovým rytmom, CD pri odchýlke osi 82 %).
+
+**Omyly a úpravy počas práce:**
+- `wget -r` sťahoval súbory po jednom (~200 záznamov za niekoľko minút) – zastavil som ho a stiahol
+  zoznam zo `SHA256SUMS.txt` paralelne; 2 súbory sa prerušili (chyba servera 502), po opakovaní
+  SHA256 sedí pre všetky.
+- Prvý beh spadol: 6 záznamov má NaN v signáli a kontrakt ich odmietol. Vynechávajú sa a sú
+  v reporte zvlášť.
+- V dokumente som najprv napísal, že Chapman nemá ST-T diagnózy – má (napr. 1 158 nešpecifických
+  ST-T); opravené na to, čo naozaj chýba (ischémia podľa lokalizácie, LVH iba 15 záznamov).

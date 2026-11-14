@@ -35,5 +35,11 @@ data/
     └── signals_100hz_ids.npy  # ecg_id v poradí cache
 ```
 
+## Georgia (G12EC) – externá validácia (#31)
+
+Voliteľné, iba pre `uv run ekg-external`: PhysioNet Challenge 2021 v1.0.3, `training/georgia/`
+(10 344 záznamov, 1,3 GB, CC BY 4.0) do `data/raw/georgia/`, overené SHA256. Postup stiahnutia:
+[docs/externa_validacia.md](../docs/externa_validacia.md).
+
 Prerušené sťahovanie stačí spustiť znova, pokračuje od miesta, kde skončilo. Ak sú dáta inde
 (napr. iný disk na trénovacom PC), nastav premennú prostredia `EKG_DATA_DIR`.

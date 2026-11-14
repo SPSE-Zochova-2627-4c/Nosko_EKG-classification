@@ -1,0 +1,161 @@
+{
+  "dataset": "Georgia (G12EC), PhysioNet Challenge 2021 v1.0.3",
+  "doi": "10.13026/34va-7q14",
+  "license": "CC BY 4.0",
+  "resampling": "scipy.signal.resample_poly 500 → 100 Hz, prvých 10 s",
+  "model_versions": {
+    "autoencoder": "ae_v1 (epocha 95, sha256 b9214cde491f)",
+    "classifier": "clf_v1 (epocha 20, sha256 20d915b776a3)"
+  },
+  "bootstrap": "1000× po záznamoch (bez ID pacienta)",
+  "counts": {
+    "záznamov stiahnutých": 10344,
+    "vynechaných": 58,
+    "vynechaných – kratšie ako 10 s": 52,
+    "vynechaných – neplatný signál (NaN)": 6,
+    "vyhodnotených": 10286,
+    "Model B – použiteľných": 9474,
+    "Model A – iba sínusový rytmus": 1734,
+    "Model A – patológia": 6509,
+    "pozitívnych (Model B)": {
+      "MI": 7,
+      "STTC": 4053,
+      "CD": 2227,
+      "HYP": 2196,
+      "AFIB": 568
+    },
+    "varovanie kvality": 15
+  },
+  "domain_shift": {
+    "n_ptbxl": 454,
+    "n_georgia": 1734,
+    "anomaly_rate_ptbxl": 0.09030837004405286,
+    "anomaly_rate_georgia": 0.23471741637831603,
+    "median_error_ptbxl": 0.0195000097155571,
+    "median_error_georgia": 0.02508264034986496
+  },
+  "model_a": {
+    "n_norm": 1734,
+    "n_abnormal": 6509,
+    "AUROC": 0.7966429411995067,
+    "senzitivita": 0.6936549393147949,
+    "špecificita": 0.765282583621684,
+    "AUROC_ci95": [
+      0.7848238341141195,
+      0.807519111448541
+    ]
+  },
+  "labels": {
+    "MI": {
+      "threshold": 0.746414065361023,
+      "support": 7,
+      "n_neg": 9008,
+      "prevalence": 0.000776483638380477,
+      "TP": 6,
+      "FP": 3214,
+      "TN": 5794,
+      "FN": 1,
+      "precision": 0.0018633540372670807,
+      "recall": 0.8571428571428571,
+      "specificity": 0.6432060390763765,
+      "F1": 0.0037186241090796405,
+      "AUROC": 0.7284001522456229,
+      "AUPRC": 0.0020126456747188706,
+      "undefined": {},
+      "n_unclear": 459,
+      "AUROC_ci95": [
+        0.5165043055948413,
+        0.8655888628622969
+      ]
+    },
+    "STTC": {
+      "threshold": 0.723987340927124,
+      "support": 4053,
+      "n_neg": 4641,
+      "prevalence": 0.46618357487922707,
+      "TP": 2477,
+      "FP": 661,
+      "TN": 3980,
+      "FN": 1576,
+      "precision": 0.7893562778840025,
+      "recall": 0.611152232913891,
+      "specificity": 0.8575737987502693,
+      "F1": 0.688916701432346,
+      "AUROC": 0.8300434827843718,
+      "AUPRC": 0.7832585504648768,
+      "undefined": {},
+      "n_unclear": 780,
+      "AUROC_ci95": [
+        0.8212970104191234,
+        0.8377694896986533
+      ]
+    },
+    "CD": {
+      "threshold": 0.7924913167953491,
+      "support": 2227,
+      "n_neg": 7247,
+      "prevalence": 0.23506438674266414,
+      "TP": 1782,
+      "FP": 1223,
+      "TN": 6024,
+      "FN": 445,
+      "precision": 0.5930116472545757,
+      "recall": 0.8001796138302649,
+      "specificity": 0.8312405133158548,
+      "F1": 0.6811926605504587,
+      "AUROC": 0.8957350327952622,
+      "AUPRC": 0.7342463159296779,
+      "undefined": {},
+      "n_unclear": 0,
+      "AUROC_ci95": [
+        0.8885202750578661,
+        0.903545328824209
+      ]
+    },
+    "HYP": {
+      "threshold": 0.6057739853858948,
+      "support": 2196,
+      "n_neg": 7278,
+      "prevalence": 0.2317922735908803,
+      "TP": 1158,
+      "FP": 734,
+      "TN": 6544,
+      "FN": 1038,
+      "precision": 0.6120507399577167,
+      "recall": 0.5273224043715847,
+      "specificity": 0.8991481176147293,
+      "F1": 0.5665362035225049,
+      "AUROC": 0.8123216485443318,
+      "AUPRC": 0.6172264472265239,
+      "undefined": {},
+      "n_unclear": 0,
+      "AUROC_ci95": [
+        0.8021306173717082,
+        0.8231866945754158
+      ]
+    },
+    "AFIB": {
+      "threshold": 0.9808287620544434,
+      "support": 568,
+      "n_neg": 8906,
+      "prevalence": 0.0599535571036521,
+      "TP": 388,
+      "FP": 192,
+      "TN": 8714,
+      "FN": 180,
+      "precision": 0.6689655172413793,
+      "recall": 0.6830985915492958,
+      "specificity": 0.9784415001122838,
+      "F1": 0.6759581881533101,
+      "AUROC": 0.926914281557298,
+      "AUPRC": 0.7125816863625419,
+      "undefined": {},
+      "n_unclear": 0,
+      "AUROC_ci95": [
+        0.9106452043706019,
+        0.9416431802609114
+      ]
+    }
+  },
+  "n_classifier": 9474
+}

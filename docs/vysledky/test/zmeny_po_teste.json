@@ -50,6 +50,16 @@
       "reason": "nový súbor: mapy dôležitosti (Integrated Gradients, Grad-CAM) a rekonštrukčná chyba v čase, CLI ekg-explain, sekcia vo web aplikácii (docs/vysvetlenie.md)",
       "affects_results": false,
       "verification": "iba číta zmrazené modely z Pipeline, predict/predict_batch sa nemenia; tests/test_explain.py::test_explain_matches_pipeline_output (anomaly score a pravdepodobnosti zhodné s Pipeline.predict); test množinu CLI odmieta (test_cli_refuses_test_set)"
+    },
+    {
+      "file": "src/ekg/evaluation/external.py",
+      "sha256_before": null,
+      "sha256_now": "87195e05c9b4f7b6707998c2b2a8695155dd57d94b994ee52bfdae89281f42e5",
+      "date": "2026-11-14",
+      "issue": "#31",
+      "reason": "nový súbor: externá validácia zmrazeného systému na datasete Georgia (G12EC), CLI ekg-external (docs/externa_validacia.md)",
+      "affects_results": false,
+      "verification": "používa Pipeline bez zmeny (predict_batch), modely a prahy overené proti zmrazeniu pred behom; z PTB-XL číta iba validation (test_no_test_set_or_ptbxl_signals_used); výsledky na PTB-XL sa nemenia"
     }
   ]
 }

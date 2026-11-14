@@ -120,6 +120,7 @@ EKG záznam (12 × 1000, mV, 100 Hz)
 | zobrazenie | obrázok (12 zvodov, rekonštrukcia, výsledky) a web aplikácia | [zobrazenie.md](docs/zobrazenie.md) |
 | záverečný test | zmrazenie → jediný beh na test množine | [zaverecne_vyhodnotenie.md](docs/zaverecne_vyhodnotenie.md) |
 | mapy dôležitosti | na čo sa modely pozerajú: Integrated Gradients a Grad-CAM (Model B), chyba v čase (Model A); kontrola na validation | [vysvetlenie.md](docs/vysvetlenie.md) |
+| externá validácia | zmrazený systém na datasete Georgia (G12EC, 10 286 záznamov): mapovanie, metriky, príčiny poklesu | [externa_validacia.md](docs/externa_validacia.md) |
 | podskupiny | výsledky podľa veku, pohlavia a kvality signálu s 95 % CI (opisne, bez zmeny modelov) | [podskupiny.md](docs/podskupiny.md) |
 
 ## Reprodukcia celého postupu
@@ -170,8 +171,9 @@ a `libc6-dev`. Inference beží vždy na CPU vo float32 (reprodukovateľný výs
 ## Obmedzenia
 
 - **Jeden zdroj dát.** Modely sú trénované a testované iba na PTB-XL (jedna inštitúcia, záznamy
-  z rokov 1989 – 1996). Na iných dátach (iné prístroje, populácia) môžu fungovať horšie – externá
-  validácia nebola robená (#31).
+  z rokov 1989 – 1996). Na externom datasete Georgia (USA, iný prístroj) bez úprav klesla macro AUROC
+  4 labelov z 0,934 na 0,866, prahy sa neprenášajú dobre a autoencoder dáva viac poplachov;
+  MI sa tam overiť nedalo ([externa_validacia.md](docs/externa_validacia.md)).
 - **Neisté a nevyvážené anotácie.** Labely vychádzajú z nálezov kardiológov vrátane neistých
   (napr. „infarkt nie je vylúčený“); recall MI je pri neistých anotáciách 0,58, pri istých 0,89.
   Poruchy sú nevyvážené (AFIB 7 %, HYP 12 % záznamov).

@@ -153,6 +153,7 @@ Aby zmrazenie ostalo dôveryhodné, zmeny po teste sa **evidujú** v
 | `src/ekg/inference.py` | `ptbxl_records([])` nenačíta databázu (2 riadky) | žiadny – výstupy pre záznamy 10, 17, 127, 352 sú zhodné s #19 |
 | `src/ekg/evaluation/final_evaluation.py` | `--check` prijme zapísané zmeny kódu | žiadny – výpočet metrík sa nezmenil |
 | `src/ekg/evaluation/final_evaluation.py` (#26) | `--check` prijme aj reťaz zmien a zapísaný nový súbor | žiadny – výpočet metrík sa nezmenil |
+| `src/ekg/evaluation/external.py` (#31, nový) | externá validácia na Georgia ([externa_validacia.md](externa_validacia.md)) | žiadny – iba vyhodnocuje zmrazenú pipeline na iných dátach |
 | `src/ekg/explain.py` (#27, nový) | mapy dôležitosti ([vysvetlenie.md](vysvetlenie.md)) | žiadny – výstupy pipeline nemení, iba ich vysvetľuje |
 | `src/ekg/evaluation/subgroups.py` (#26, nový) | analýza podľa veku, pohlavia a kvality ([podskupiny.md](podskupiny.md)) | žiadny – iba číta uložené predikcie testu z #22 |
 

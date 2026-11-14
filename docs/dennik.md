@@ -596,3 +596,38 @@ Rozhodnutie opraviť a zdokumentovať (namiesto obchádzania cez `ekg-show`) uro
 
 **Omyly:** do demo návodu som najprv napísal, že Streamlit pri prvom spustení pýta e-mail – neoveril som
 to, tak som to odstránil.
+
+---
+
+## 2026-11-14 – Výsledky podľa veku, pohlavia a kvality signálu (issue #26)
+
+**Čo pribudlo:** `ekg-subgroups` (`src/ekg/evaluation/subgroups.py`) – oba modely po skupinách veku,
+pohlavia, kvality (#7) a typu šumu s počtami pacientov a labelov, 95 % CI z bootstrapu po pacientoch
+a stavom každej metriky (ok / malá skupina / nedefinovaná + dôvod). Dokument
+[podskupiny.md](podskupiny.md), výstupy v `docs/vysledky/podskupiny/`.
+
+**Rozhodnutia:**
+- **Test množina iba z uložených predikcií #22** (rozhodol Matúš): na teste sa nič znova nepočíta,
+  načítajú sa len labely a `patient_id`. Validation sa počíta zmrazenou pipeline (#19).
+- Skupiny som určil vopred (vek ako v #18) a skupiny chýbajúcich údajov sú v reporte vždy, aj prázdne.
+- Hranica „malá skupina“ = 30 prípadov, rovnako ako fallback prahov v #17. Macro metriky iba vtedy,
+  keď sú definované všetky labely.
+- Nový súbor v zmrazenom `src/ekg` by `ekg-final-eval --check` hlásil ako „nový súbor“. Rozšíril som
+  evidenciu zmien po teste: prijme aj zapísaný nový súbor (`sha256_before = null`) a reťaz viacerých
+  zmien toho istého súboru. Modely, prahy a dáta ostávajú nemenné bez výnimky.
+
+**Zistenia:** Model A silno závisí od veku (test AUROC 0,68 pod 40 rokov vs. 0,81 pri 60 – 79,
+poplachy na záznamoch bez labelu pri ≥ 80: 59 – 71 %) – trénovací prísny NORM má medián veku 53 rokov.
+Šum zvyšuje poplachy Modelu A o 50 – 80 %, a nie je to skreslené vekom. Model B je voči šumu odolný.
+Rozdiel medzi ženami a mužmi z #22 sa nepotvrdil (na validation nie je, intervaly sa prekrývajú).
+
+**Omyly a úpravy počas práce:**
+- Pri prvom behu vyšla AUROC Modelu A pri šume „nedefinovaná“. Overil som príčinu: prísny NORM
+  podľa definície šum vylučuje, takže v týchto skupinách nie je žiadny. Doplnil som metriku „poplachy
+  bez labelu“, aby sa o poplachoch pri šume dalo niečo povedať (s upozornením, že to nie je špecificita).
+- Prvý graf naťahovali skupiny s 2 – 4 záznamami (interval cez celú os). Skupiny pod 30 záznamov
+  sú teraz iba v tabuľkách.
+- Macro F1 pri mladých (test < 40: 0,431) vyzeralo ako veľký problém, ale AFIB tam má 1 prípad
+  a MI 7 – preto porovnávam micro F1 a macro označujem ako malú skupinu.
+- Súbory upravené cez Python vo Windows dostali konce riadkov CRLF (diff celého README). Previedol
+  som ich späť na LF.

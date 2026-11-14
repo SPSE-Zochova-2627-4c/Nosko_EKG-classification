@@ -202,11 +202,25 @@ def _test_set_openers() -> dict[str, str]:
 
 
 def test_test_set_is_evaluated_only_in_final_evaluation():
-    """Test množinu otvára iba kontrola dát (#9, bez modelov) a záverečné vyhodnotenie."""
+    """Test množinu otvára iba kontrola dát (#9, bez modelov), záverečné vyhodnotenie a analýza
+    podskupín (#26), ktorá číta iba labely k predikciám uloženým v #22."""
+    import inspect
+
+    from ekg.evaluation import subgroups
+
     openers = _test_set_openers()
-    assert sorted(openers) == ["data/check_pipeline.py", "evaluation/final_evaluation.py"]
+    assert sorted(openers) == [
+        "data/check_pipeline.py",
+        "evaluation/final_evaluation.py",
+        "evaluation/subgroups.py",
+    ]
     check = openers["data/check_pipeline.py"]
     assert "ekg.models" not in check and "ekg.inference" not in check  # žiadny model
+    # v #26 otvára test množinu iba load_test a tá modely nespúšťa
+    for name, func in inspect.getmembers(subgroups, inspect.isfunction):
+        if "allow_test" in inspect.getsource(func):
+            assert name == "load_test"
+    assert "Pipeline" not in inspect.getsource(subgroups.load_test)
 
 
 # --- uložené výsledky záverečného vyhodnotenia ------------------------------------------
@@ -278,6 +292,35 @@ def test_documented_code_change_is_accepted(fake_project):
     assert fe.check_freeze(freeze, [change]) == []
     (fake_project / "src/ekg/a.py").write_text("ďalšia zmena")  # nová, nezdokumentovaná
     assert fe.check_freeze(freeze, [change]) == ["zmenený src/ekg/a.py"]
+
+
+def test_documented_new_file_and_repeated_change_are_accepted(fake_project):
+    """#26: nový súbor (sha256_before = None) a ďalšia zmena už zmeneného súboru (reťaz)."""
+    import hashlib
+
+    def sha(rel):
+        return hashlib.sha256((fake_project / rel).read_bytes()).hexdigest()
+
+    freeze = fe.make_freeze()
+    (fake_project / "src/ekg/a.py").write_text("oprava")
+    first = _change(fake_project, "src/ekg/a.py", freeze)
+    (fake_project / "src/ekg/a.py").write_text("ďalšia oprava")
+    second = {**first, "sha256_before": first["sha256_now"], "sha256_now": sha("src/ekg/a.py")}
+    del second["sha256_frozen"]
+    (fake_project / "src/ekg/novy.py").write_text("x = 1")
+    new = {"file": "src/ekg/novy.py", "sha256_before": None, "sha256_now": sha("src/ekg/novy.py"),
+           "issue": "#26", "reason": "test", "affects_results": False}  # fmt: skip
+
+    assert fe.check_freeze(freeze, [first, second, new]) == []
+    assert fe.check_freeze(freeze, [second, new]) == ["zmenený src/ekg/a.py"]  # chýba 1. krok
+    assert fe.check_freeze(freeze, [first, second]) == ["nový súbor src/ekg/novy.py"]
+    (fake_project / "src/ekg/novy.py").write_text("x = 2")  # nezdokumentovaná úprava
+    assert fe.check_freeze(freeze, [first, second, new]) == ["nový súbor src/ekg/novy.py"]
+
+
+def test_new_file_outside_src_is_never_accepted():
+    assert fe.accepted_change("checkpoints/x.pt", None, "a", [{"file": "checkpoints/x.pt",
+        "sha256_before": None, "sha256_now": "a"}]) is None  # fmt: skip
 
 
 def test_models_thresholds_and_data_can_never_change(fake_project):

@@ -1,0 +1,33 @@
+množina,dimenzia,skupina,záznamov,pacientov,A prísny NORM,A patológia,A vynechaných,B záznamov,B bez labelu,B MI,B STTC,B CD,B HYP,B AFIB,malá skupina
+val,všetky,všetky,2183,1942,454,1240,489,2150,910,540,528,495,268,151,False
+val,vek,< 40,284,278,110,64,110,284,220,9,18,30,16,2,False
+val,vek,40–59,669,586,212,263,194,664,401,95,110,85,51,8,False
+val,vek,60–79,932,834,130,649,153,919,270,309,281,254,137,68,False
+val,vek,≥ 80,298,249,2,264,32,283,19,127,119,126,64,73,False
+val,vek,neznámy,0,0,0,0,0,0,0,0,0,0,0,0,True
+val,pohlavie,muž,1133,1003,245,653,235,1116,463,310,244,265,159,72,False
+val,pohlavie,žena,1050,939,209,587,254,1034,447,230,284,230,109,79,False
+val,pohlavie,neznáme,0,0,0,0,0,0,0,0,0,0,0,0,True
+val,kvalita (#7),bez varovania,1639,1502,454,919,266,1621,702,395,392,373,210,115,False
+val,kvalita (#7),s varovaním,544,505,0,321,223,529,208,145,136,122,58,36,False
+val,typ problému kvality,drift základnej línie,229,220,0,141,88,226,85,63,62,59,26,14,False
+val,typ problému kvality,statický šum,331,305,0,186,145,322,136,79,80,64,32,22,False
+val,typ problému kvality,nárazový šum,52,49,0,31,21,47,16,16,9,14,6,5,False
+val,typ problému kvality,problém s elektródami,4,4,0,3,1,4,1,1,3,0,2,0,True
+val,typ problému kvality,problém zo signálu,2,2,0,2,0,2,0,1,1,0,0,0,True
+test,všetky,všetky,2198,1904,464,1257,477,2166,909,550,521,496,262,152,False
+test,vek,< 40,284,266,110,66,108,284,218,7,20,37,10,1,False
+test,vek,40–59,641,552,187,268,186,640,372,113,98,104,43,14,False
+test,vek,60–79,933,817,163,617,153,917,300,279,260,220,149,67,False
+test,vek,≥ 80,340,274,4,306,30,325,19,151,143,135,60,70,False
+test,vek,neznámy,0,0,0,0,0,0,0,0,0,0,0,0,True
+test,pohlavie,muž,1132,969,253,629,250,1113,484,297,229,266,135,81,False
+test,pohlavie,žena,1066,935,211,628,227,1053,425,253,292,230,127,71,False
+test,pohlavie,neznáme,0,0,0,0,0,0,0,0,0,0,0,0,True
+test,kvalita (#7),bez varovania,1670,1499,464,956,250,1648,692,408,410,375,207,109,False
+test,kvalita (#7),s varovaním,528,490,0,301,227,518,217,142,111,121,55,43,False
+test,typ problému kvality,drift základnej línie,236,231,0,122,114,231,109,59,48,48,27,13,False
+test,typ problému kvality,statický šum,316,292,0,189,127,312,123,88,68,75,30,28,False
+test,typ problému kvality,nárazový šum,40,40,0,21,19,38,17,10,11,9,3,4,False
+test,typ problému kvality,problém s elektródami,3,3,0,2,1,2,0,0,1,1,0,0,True
+test,typ problému kvality,problém zo signálu,2,2,0,1,1,2,1,0,0,1,1,0,True
